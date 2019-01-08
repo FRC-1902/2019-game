@@ -164,6 +164,7 @@ bin/
 build/
 .classpath
 .project
+*.iml
 
 !src/main/resources/*
 
