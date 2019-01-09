@@ -7,18 +7,9 @@
 
 package frc.robot;
 
-import edu.wpi.cscore.MjpegServer;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.CommandBasedRobot;
-import edu.wpi.first.wpilibj.buttons.Button;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import com.ctre.phoenix.motorcontrol.can.*;
+import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.commands.DriveCommand;
+import frc.robot.subsystems.DriveSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,61 +18,50 @@ import com.ctre.phoenix.motorcontrol.can.*;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends CommandBasedRobot {
+public class Robot extends TimedRobot {
 
-  private final Joystick DriveStick = new Joystick(0);
-
-
-
-
-  @Override
-  public void robotInit() {
-    Joystick Drive = new Joystick(0);
+    public static DriveSubsystem driveSubsystem;
+    public DriveCommand driveCommand;
 
 
-  }
-
-  /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
-   */
-  @Override
-  public void robotPeriodic() {
-
-    //System.out.println("FPS: " + usbCamera.getActualFPS());
-    //System.out.println("Data Rate: " + usbCamera.getActualDataRate());
-  }
-
-
-  @Override
-  public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    System.out.println("Auto selected: " + m_autoSelected);
-  }
-
-  @Override
-  public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
+    @Override
+    public void robotInit() {
+        driveSubsystem = new DriveSubsystem();
+        driveCommand = new DriveCommand(this);
     }
-  }
 
-  @Override
-  public void teleopPeriodic() {
-    
-  }
+    /**
+     * This function is called every robot packet, no matter the mode. Use
+     * this for items like diagnostics that you want ran during disabled,
+     * autonomous, teleoperated and test.
+     *
+     * <p>This runs after the mode specific periodic functions, but before
+     * LiveWindow and SmartDashboard integrated updating.
+     */
+    @Override
+    public void robotPeriodic() {
 
-  @Override
-  public void testPeriodic() {
-  }
+        //System.out.println("FPS: " + usbCamera.getActualFPS());
+        //System.out.println("Data Rate: " + usbCamera.getActualDataRate());
+    }
+
+
+    @Override
+    public void autonomousInit() {
+
+    }
+
+    @Override
+    public void autonomousPeriodic() {
+
+    }
+
+    @Override
+    public void teleopPeriodic() {
+
+    }
+
+    @Override
+    public void testPeriodic() {
+    }
 }

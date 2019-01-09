@@ -5,7 +5,7 @@ import com.explodingbacon.bcnlib.actuators.MotorGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 
-public class DriveSubsystems extends Subsystem {
+public class DriveSubsystem extends Subsystem {
     MotorGroup left, right;
 
     WPI_VictorSPX leftDrive1 = new WPI_VictorSPX(RobotMap.DRIVE_LEFT_1);
@@ -15,7 +15,7 @@ public class DriveSubsystems extends Subsystem {
     WPI_VictorSPX rightDrive2 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_2);
     WPI_VictorSPX rightDrive3 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_3);
 
-    public DriveSubsystems() {
+    public DriveSubsystem() {
         left = new MotorGroup(leftDrive1, leftDrive2, leftDrive3);
         right = new MotorGroup(rightDrive1, rightDrive2, rightDrive3);
     }
