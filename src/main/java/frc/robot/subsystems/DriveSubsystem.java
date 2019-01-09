@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.explodingbacon.bcnlib.actuators.MotorGroup;
+import com.explodingbacon.bcnlib.utils.Utils;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 
@@ -18,16 +19,16 @@ public class DriveSubsystem extends Subsystem {
     public DriveSubsystem() {
         left = new MotorGroup(leftDrive1, leftDrive2, leftDrive3);
         right = new MotorGroup(rightDrive1, rightDrive2, rightDrive3);
+        left.setInverted(true);
     }
 
     public void tankDrive(double leftPower, double rightPower) {
-        left.set(leftPower);
-        right.set(rightPower);
+        left.set(Utils.minMax(leftPower, 0.1, 1));
+        right.set(Utils.minMax(rightPower, 0.1, 1));
     }
 
     public void arcadeDrive(double x, double y) {
-        left.set(y + x);
-        right.set(y - x);
+        tankDrive(y + x, y - x);
     }
 
     public void stop() {

@@ -28,6 +28,8 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         driveSubsystem = new DriveSubsystem();
         driveCommand = new DriveCommand(this);
+
+        driveCommand.start();
     }
 
     /**
