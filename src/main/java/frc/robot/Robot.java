@@ -22,14 +22,16 @@ public class Robot extends TimedRobot {
 
     public static DriveSubsystem driveSubsystem;
     public DriveCommand driveCommand;
-
+    public VisionThread vision;
 
     @Override
     public void robotInit() {
         driveSubsystem = new DriveSubsystem();
         driveCommand = new DriveCommand(this);
+        vision = new VisionThread();
 
         driveCommand.start();
+        vision.start();
     }
 
     /**
