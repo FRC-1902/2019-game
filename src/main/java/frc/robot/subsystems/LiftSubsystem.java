@@ -25,12 +25,12 @@ public class LiftSubsystem extends Subsystem {
         liftPID = new PIDController(lift, liftEncoder, 0, 0, 0);
     }
 
-    public void LiftSet(Position pos) {
+    public void set(Position pos) {
         liftPID.setTarget(pos.value);
         currentLiftPosition = pos;
     }
 
-    public void LiftNudge(int clicks) {
+    public void nudge(int clicks) {
         liftPID.setTarget(currentLiftPosition.value + clicks);
     }
 
