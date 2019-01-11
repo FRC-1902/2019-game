@@ -58,7 +58,8 @@ dependencies {
     compile "com.ctre.phoenix:cci:5.12.0"
 
     compile "edu.wpi.first.thirdparty.frc2019.opencv:opencv-java:3.4.4-4"
-    
+    compile "edu.wpi.first.thirdparty.frc2019.opencv:opencv-cpp:3.4.4-4"
+
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
     testCompile 'junit:junit:4.12'
