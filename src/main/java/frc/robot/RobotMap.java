@@ -7,4 +7,12 @@ public class RobotMap {
     public static final int DRIVE_RIGHT_1 = 1;
     public static final int DRIVE_RIGHT_2 = 4;
     public static final int DRIVE_RIGHT_3 = 5;
+
+    public static final int LIFT_1 = 6;
+    public static final int LIFT_2 = 7;
+    public static final int LIFT_3 = 8;
+    public static final int LIFT_4 = 9;
+
+    public static final int LIFT_ENCODER_PORT_A = 0;
+    public static final int LIFT_ENCODER_PORT_B = 1;
 }
