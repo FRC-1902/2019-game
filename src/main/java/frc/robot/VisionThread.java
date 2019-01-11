@@ -6,8 +6,6 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
-import org.opencv.imgproc.Imgproc;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,56 +42,63 @@ public class VisionThread implements Runnable {
 
         Log.v("Vision Processing online.");
         while (true) {
-            long timeOfGet = System.currentTimeMillis();
-            cvSink.grabFrame(source.getMat());
+            try{
+                Log.v("Vision loop alive and healthy");
+                long timeOfGet = System.currentTimeMillis();
+                cvSink.grabFrame(source.getMat());
 
-            //Log.v("Millis diff: " + (System.currentTimeMillis() - millis));
+                if (!source.getMat().empty()) {
 
-            output = source.copy();
-            source.toHSV();
+                    //Log.v("Millis diff: " + (System.currentTimeMillis() - millis));
 
-            source.inRange(new HSV(hLow, sLow, vLow), new HSV(hHigh, sHigh, vHigh));
+                    output = source.copy();
+                    source.toHSV();
+
+                    source.inRange(new HSV(hLow, sLow, vLow), new HSV(hHigh, sHigh, vHigh));
 
 
+                    List<Contour> contours = source.getContours();
+                    List<Contour> goodContours = new ArrayList<>();
 
-            List<Contour> contours = source.getContours();
-            List<Contour> goodContours = new ArrayList<>();
+                    output.drawContours(contours, Color.RED);
 
-            output.drawContours(contours, Color.RED);
+                    for (Contour c : contours) {
+                        if (c.getArea() > 50) {
+                            goodContours.add(c);
+                        }
+                    }
 
-            for (Contour c : contours) {
-                if (c.getArea() > 50) {
-                    goodContours.add(c);
+                    //Imgproc.minAreaRect()
+
+                    //Assume we have only two contours left, the correct targets
+
+                    if (goodContours.size() == 2) {
+                        Contour c1 = goodContours.get(0);
+                        Contour c2 = goodContours.get(1);
+
+                        if (c1.coords.x > c2.coords.x) {
+                            c1 = goodContours.get(1);
+                            c2 = goodContours.get(0);
+                        }
+
+                        Rectangle r1 = c1.getBoundingBox();
+                        Rectangle r2 = c2.getBoundingBox();
+
+                        System.out.println("Small Boi Dist: " + ((r2.x - r2.width / 2) - (r1.x + r1.width / 2)));
+                        System.out.println("Big Boi Dist: " + ((r2.x + r2.width / 2) - (r1.x - r1.width / 2)));
+
+                        output.drawRectangle(r1, Color.BLUE);
+                        output.drawRectangle(r2, Color.BLUE);
+                    } else {
+                        Log.v("More than two");
+                    }
+
+
+                    outputStream.putFrame(output.getMat());
                 }
+            } catch(Exception e){
+                e.printStackTrace();
             }
-
-            //Imgproc.minAreaRect()
-
-            //Assume we have only two contours left, the correct targets
-
-            if (goodContours.size() == 2) {
-                Contour c1 = goodContours.get(0);
-                Contour c2 = goodContours.get(1);
-
-                if (c1.coords.x > c2.coords.x) {
-                    c1 = goodContours.get(1);
-                    c2 = goodContours.get(0);
-                }
-
-                Rectangle r1 = c1.getBoundingBox();
-                Rectangle r2 = c2.getBoundingBox();
-
-                System.out.println("Small Boi Dist: " + ((r2.x - r2.width/2) - (r1.x +r1.width/2)));
-                System.out.println("Big Boi Dist: " + ((r2.x + r2.width/2) - (r1.x-r1.width/2)));
-
-                output.drawRectangle(r1, Color.BLUE);
-                output.drawRectangle(r2, Color.BLUE);
-            } else {
-                Log.v("More than two");
-            }
-
-
-            outputStream.putFrame(output.getMat());
         }
 
     }

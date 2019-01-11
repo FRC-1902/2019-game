@@ -7,9 +7,12 @@
 
 package frc.robot;
 
+import com.explodingbacon.bcnlib.framework.Log;
+import com.explodingbacon.bcnlib.vision.Vision;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import org.opencv.core.Core;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,8 +31,11 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         driveSubsystem = new DriveSubsystem();
         driveCommand = new DriveCommand(this);
+
+        Vision.init();
         vision = new VisionThread();
 
+        Log.d("Code is updating");
         driveCommand.start();
         vision.start();
     }
@@ -67,5 +73,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
+    }
+
+    @Override
+    public void teleopInit() {
+        driveSubsystem.light.set(true);
     }
 }
