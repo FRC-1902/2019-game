@@ -9,6 +9,10 @@ package frc.robot;
 
 import com.explodingbacon.bcnlib.framework.Log;
 import com.explodingbacon.bcnlib.vision.Vision;
+import edu.wpi.cscore.MjpegServer;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoProperty;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -26,16 +30,36 @@ public class Robot extends TimedRobot {
     public static DriveSubsystem driveSubsystem;
     public DriveCommand driveCommand;
     public VisionThread vision;
+    UsbCamera camera;
+    MjpegServer server;
 
     @Override
     public void robotInit() {
+        /*camera = new UsbCamera("usb camera", 0);
+        camera.setResolution(640,480);
+        camera.setFPS(15);
+        //CameraServer.getInstance().addCamera(camera);
+        server = CameraServer.getInstance().addServer("serve_USB Camera 0",1182);
+
+        server.setSource(camera);
+        camera.setFPS(15);
+
+        for(VideoProperty v : camera.enumerateProperties()){
+            System.out.println("Property: " + v.getName());
+        }
+        System.out.println("Default compression: " + server.getProperty("default_compression").get());
+        System.out.println("compression min: " + server.getProperty("default_compression").getMin());
+        System.out.println("compression max: " + server.getProperty("default_compression").getMax());
+        System.out.println("Server fps: " + server.getProperty("fps").get());
+        server.getProperty("compression").set(50);
+        */
         driveSubsystem = new DriveSubsystem();
         driveCommand = new DriveCommand(this);
 
         Vision.init();
         vision = new VisionThread();
 
-        driveCommand.start();
+        //driveCommand.start();
         vision.start();
     }
 
@@ -49,6 +73,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
+        //System.out.println("Server fps: " + server.getProperty("fps").get());
+        //System.out.println("Compression: " + server.getProperty("compression").get());
 
         //System.out.println("FPS: " + usbCamera.getActualFPS());
         //System.out.println("Data Rate: " + usbCamera.getActualDataRate());
