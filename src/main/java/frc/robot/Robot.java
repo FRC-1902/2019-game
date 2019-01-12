@@ -35,7 +35,6 @@ public class Robot extends TimedRobot {
         Vision.init();
         vision = new VisionThread();
 
-        Log.d("Code is updating");
         driveCommand.start();
         vision.start();
     }

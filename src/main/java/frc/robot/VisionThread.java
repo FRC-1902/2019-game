@@ -6,6 +6,9 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import org.opencv.imgproc.Imgproc;
+
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +44,10 @@ public class VisionThread implements Runnable {
         //CameraSettings.setExposure(VISION_EXPOSURE);
 
         Log.v("Vision Processing online.");
+
         while (true) {
             try{
-                Log.v("Vision loop alive and healthy");
+                //Log.v("Vision loop alive and healthy");
                 long timeOfGet = System.currentTimeMillis();
                 cvSink.grabFrame(source.getMat());
 
@@ -90,7 +94,7 @@ public class VisionThread implements Runnable {
                         output.drawRectangle(r1, Color.BLUE);
                         output.drawRectangle(r2, Color.BLUE);
                     } else {
-                        Log.v("More than two");
+                        //Log.v("More than two");
                     }
 
 
