@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.explodingbacon.bcnlib.actuators.MotorGroup;
 import com.explodingbacon.bcnlib.framework.Log;
 import com.explodingbacon.bcnlib.vision.Vision;
 import edu.wpi.cscore.MjpegServer;
@@ -33,6 +35,13 @@ public class Robot extends TimedRobot {
     UsbCamera camera;
     MjpegServer server;
 
+    WPI_VictorSPX leftDrive1;
+    WPI_VictorSPX leftDrive2;
+    WPI_VictorSPX leftDrive3;
+
+    MotorGroup test;
+
+
     @Override
     public void robotInit() {
         /*camera = new UsbCamera("usb camera", 0);
@@ -53,14 +62,23 @@ public class Robot extends TimedRobot {
         System.out.println("Server fps: " + server.getProperty("fps").get());
         server.getProperty("compression").set(50);
         */
-        driveSubsystem = new DriveSubsystem();
-        driveCommand = new DriveCommand(this);
 
-        Vision.init();
-        vision = new VisionThread();
+
+        leftDrive1 = new WPI_VictorSPX(0);
+        leftDrive2 = new WPI_VictorSPX(2);
+        leftDrive3 = new WPI_VictorSPX(3);
+
+        test = new MotorGroup(leftDrive1, leftDrive2, leftDrive3);
+
+
+        //driveSubsystem = new DriveSubsystem();
+        //driveCommand = new DriveCommand(this);
+
+        //Vision.init();
+        //vision = new VisionThread();
 
         //driveCommand.start();
-        vision.start();
+        //vision.start();
     }
 
     /**
@@ -93,7 +111,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-
+        if (OI.driveController.x.get()) {
+            //test.set(OI.driveController.getY());
+        }
     }
 
     @Override
@@ -102,6 +122,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        driveSubsystem.light.set(true);
+        //driveSubsystem.light.set(true);
+        test.testEachWait(0.5, 0.75);
     }
 }

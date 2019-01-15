@@ -52,14 +52,10 @@ public class VisionThread implements Runnable {
         Image source = new Image();
         Image output = null;
 
-        //CameraSettings.setExposureAuto(1);
-        //CameraSettings.setExposure(VISION_EXPOSURE);
-
         Log.v("Vision Processing online.");
 
         while (true) {
             try{
-                //Log.v("Vision loop alive and healthy");
                 long timeOfGet = System.currentTimeMillis();
                 cvSink.grabFrame(source.getMat());
 
@@ -102,15 +98,11 @@ public class VisionThread implements Runnable {
                         }
                     }
 
-                    goodContours.sort(new Comparator<Contour>() {
-                        @Override
-                            public int compare(Contour o1, Contour o2) {
-                                return (int)(o2.getArea() - o1.getArea());
-                            }
-                        });
+                    goodContours.sort((o1, o2) -> (int)(o2.getArea() - o1.getArea()));
                     List<Contour> finalContours = new ArrayList<>();
 
                     if(goodContours.size() > 2){
+                        // Filter for a pair of targets with angles of rotation roughly matching the goal
                         RotatedRect rr1 = goodContours.get(0).rotatedRect;
                         double targetAngle = rr1.size.height > rr1.size.width ? 75.5 : 14.5;
                         RotatedRect current;
@@ -125,14 +117,13 @@ public class VisionThread implements Runnable {
                         finalContours.add(goodContours.get(0));
                         finalContours.add(goodContours.get(out));
                     } else if(goodContours.size() == 2){
+                        // If there is only two targets, assume they're the correct two targets.
                         finalContours = goodContours;
-                    } else{
-                        System.out.println("Less than 2 targets seen");
+                    } else {
+                        Log.e("Less than 2 potential vision targets seen");
                     }
-                    //Imgproc.minAreaRect()
 
-                    //Assume we have only two contours left, the correct targets
-
+                    //We have only two contours left, the correct targets
                     if (finalContours.size() == 2) {
                         Contour c1 = finalContours.get(0);
                         Contour c2 = finalContours.get(1);
