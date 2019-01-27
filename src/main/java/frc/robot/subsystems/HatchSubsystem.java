@@ -10,12 +10,13 @@ import frc.robot.RobotMap;
 
 public class HatchSubsystem extends Subsystem {
     Encoder hatchEncoder;
-    WPI_VictorSPX hatchArm = new WPI_VictorSPX(RobotMap.HATCH_ARM);
+    public WPI_VictorSPX hatchArm;
     PIDController hatchPID;
-    Solenoid flipper;
-    Solenoid outtake;
+    public Solenoid flipper;
+    public Solenoid outtake;
 
     public HatchSubsystem() {
+        hatchArm = new WPI_VictorSPX(RobotMap.HATCH_ARM);
         hatchEncoder = new Encoder(RobotMap.HATCH_ENCODER_PORT_A, RobotMap.HATCH_ENCODER_PORT_B);
         hatchEncoder.setPIDMode(AbstractEncoder.PIDMode.POSITION);
         hatchPID = new PIDController(hatchArm, hatchEncoder, 0, 0, 0);

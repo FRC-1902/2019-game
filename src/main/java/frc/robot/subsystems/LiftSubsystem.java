@@ -10,15 +10,16 @@ import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
     Encoder liftEncoder;
-    WPI_VictorSPX lift1 = new WPI_VictorSPX(RobotMap.LIFT_1);
-    WPI_VictorSPX lift2 = new WPI_VictorSPX(RobotMap.LIFT_2);
-    WPI_VictorSPX lift3 = new WPI_VictorSPX(RobotMap.LIFT_3);
-    WPI_VictorSPX lift4 = new WPI_VictorSPX(RobotMap.LIFT_4);
+    WPI_VictorSPX lift1, lift2, lift3, lift4;
     PIDController liftPID;
     MotorGroup lift;
     Position currentLiftPosition;
 
     public LiftSubsystem() {
+        lift1 = new WPI_VictorSPX(RobotMap.LIFT_1);
+        lift2 = new WPI_VictorSPX(RobotMap.LIFT_2);
+        lift3 = new WPI_VictorSPX(RobotMap.LIFT_3);
+        lift4 = new WPI_VictorSPX(RobotMap.LIFT_4);
         lift = new MotorGroup(lift1, lift2, lift3, lift4);
         liftEncoder = new Encoder(RobotMap.LIFT_ENCODER_PORT_A, RobotMap.LIFT_ENCODER_PORT_B);
         liftEncoder.setPIDMode(AbstractEncoder.PIDMode.POSITION);

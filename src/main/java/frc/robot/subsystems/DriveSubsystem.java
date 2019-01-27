@@ -4,31 +4,39 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.explodingbacon.bcnlib.actuators.MotorGroup;
 import com.explodingbacon.bcnlib.utils.Utils;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 
 public class DriveSubsystem extends Subsystem {
-    MotorGroup left, right;
 
-    public Solenoid light;
+    public MotorGroup left, right;
 
-    WPI_VictorSPX leftDrive1 = new WPI_VictorSPX(RobotMap.DRIVE_LEFT_1);
-    WPI_VictorSPX leftDrive2 = new WPI_VictorSPX(RobotMap.DRIVE_LEFT_2);
-    WPI_VictorSPX leftDrive3 = new WPI_VictorSPX(RobotMap.DRIVE_LEFT_3);
-    WPI_VictorSPX rightDrive1 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_1);
-    WPI_VictorSPX rightDrive2 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_2);
-    WPI_VictorSPX rightDrive3 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_3);
+    public Solenoid shift;
+
+    VictorSP leftDrive1;
+    VictorSP leftDrive2;
+    VictorSP leftDrive3;
+    VictorSP rightDrive1;
+    VictorSP rightDrive2;
+    VictorSP rightDrive3;
 
     public DriveSubsystem() {
+        leftDrive1 = new VictorSP(RobotMap.DRIVE_LEFT_1);
+        leftDrive2 = new VictorSP(RobotMap.DRIVE_LEFT_2);
+        leftDrive3 = new VictorSP(RobotMap.DRIVE_LEFT_3);
+        rightDrive1 = new VictorSP(RobotMap.DRIVE_RIGHT_1);
+        rightDrive2 = new VictorSP(RobotMap.DRIVE_RIGHT_2);
+        rightDrive3 = new VictorSP(RobotMap.DRIVE_RIGHT_3);
         left = new MotorGroup(leftDrive1, leftDrive2, leftDrive3);
-        right = new MotorGroup(rightDrive1, rightDrive2, rightDrive3);
         left.setInverted(true);
-        light = new Solenoid(1);
+        right = new MotorGroup(rightDrive1, rightDrive2, rightDrive3);
+        shift = new Solenoid(RobotMap.SHIFTER_SOLENOID);
     }
 
     public void tankDrive(double leftPower, double rightPower) {
-        left.set(Utils.minMax(leftPower, 0.1, 1));
-        right.set(Utils.minMax(rightPower, 0.1, 1));
+        left.set(leftPower);
+        right.set(rightPower);
     }
 
     public void arcadeDrive(double x, double y) {
@@ -38,6 +46,10 @@ public class DriveSubsystem extends Subsystem {
     public void stop() {
         left.set(0);
         right.set(0);
+    }
+
+    public void shift(boolean b) {
+        shift.set(b);
     }
 
     @Override
