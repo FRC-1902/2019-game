@@ -1,18 +1,17 @@
 package frc.robot;
 
 public class RobotMap {
-    public static final int DRIVE_LEFT_1 = 8;
-    public static final int DRIVE_LEFT_2 = 0;
-    public static final int DRIVE_LEFT_3 = 9;
-    public static final int DRIVE_RIGHT_1 = 1;
-    public static final int DRIVE_RIGHT_2 = 2;
-    public static final int DRIVE_RIGHT_3 = 3;
+    public static final int DRIVE_LEFT_1 = 1;
+    public static final int DRIVE_LEFT_2 = 2;
+    public static final int DRIVE_LEFT_3 = 5;
+    public static final int DRIVE_RIGHT_1 = 0;
+    public static final int DRIVE_RIGHT_2 = 3;
+    public static final int DRIVE_RIGHT_3 = 4;
 
     public static final int LIFT_1 = 6;
     public static final int LIFT_2 = 7;
     public static final int LIFT_3 = 8;
     public static final int LIFT_4 = 9;
-
     public static final int LIFT_ENCODER_PORT_A = 0;
     public static final int LIFT_ENCODER_PORT_B = 1;
 

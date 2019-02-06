@@ -7,24 +7,13 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.explodingbacon.bcnlib.actuators.MotorGroup;
-import com.explodingbacon.bcnlib.controllers.XboxController;
-import com.explodingbacon.bcnlib.framework.Log;
-import com.explodingbacon.bcnlib.utils.Utils;
 import com.explodingbacon.bcnlib.vision.Vision;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoProperty;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.VictorSP;
 import frc.robot.commands.DriveCommand;
-import frc.robot.commands.HatchTestCommand;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.HatchSubsystem;
-import org.opencv.core.Core;
+import frc.robot.subsystems.PanelSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -36,18 +25,16 @@ import org.opencv.core.Core;
 public class Robot extends TimedRobot {
 
    public static DriveSubsystem driveSubsystem;
-    public static HatchSubsystem hatchSubsystem;/*
-    public VisionThread vision;
+    public static PanelSubsystem panelSubsystem;
+    public static VisionThread vision;
     UsbCamera camera;
     MjpegServer server;
 
-    Solenoid s;
+    //Solenoid s;
 
-    MotorGroup test;*/
 
     @Override
     public void robotInit() {
-
         /*camera = new UsbCamera("usb camera", 0);
         camera.setResolution(640,480);
         camera.setFPS(15);
@@ -69,14 +56,13 @@ public class Robot extends TimedRobot {
 
 
         driveSubsystem = new DriveSubsystem();
+        panelSubsystem = new PanelSubsystem();
 
-        //hatchSubsystem = new HatchSubsystem();
 
+        Vision.init();
+        vision = new VisionThread();
 
-        //Vision.init();
-        //vision = new VisionThread();
-
-        //vision.start();
+        vision.start();
     }
 
     /**
@@ -108,16 +94,15 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+
+    }
 
     @Override
     public void testInit() {
-        driveSubsystem.left.testEachWait(0.5, 0.5);
-        driveSubsystem.right.testEachWait(0.5, 0.5);
-        driveSubsystem.shift(true);
-     //right.testEachWait(0.5, 0.5);
-        //arm.getMotors().get(1).set(0.5);
-       // arm.testEachWait(0.5, 0.2);
+     driveSubsystem.shift(true);
+     driveSubsystem.left.testEachWait(0.5, 0.5);
+     driveSubsystem.right.testEachWait(0.5, 0.5);
     }
 
     @Override
@@ -126,6 +111,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        OI.runCommand(new DriveCommand(this));
+     OI.runCommand(new DriveCommand(this,vision));
     }
 }

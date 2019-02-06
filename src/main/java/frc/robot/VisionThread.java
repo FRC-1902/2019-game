@@ -21,6 +21,7 @@ public class VisionThread implements Runnable {
 
     public final int hLow = 60, sLow = 150, vLow = 50;
     public final int hHigh = 110, sHigh = 255, vHigh = 255;
+    private double distance, offset, target;
 
     Thread thread;
 
@@ -72,7 +73,6 @@ public class VisionThread implements Runnable {
 
                     source.inRange(new HSV(hLow, sLow, vLow), new HSV(hHigh, sHigh, vHigh));
 
-
                     List<Contour> contours = getContours(source);//source.getContours();
                     List<Contour> goodContours = new ArrayList<>();
 
@@ -88,7 +88,7 @@ public class VisionThread implements Runnable {
                                 ratio = 1 / ratio;
                                 tall = false;
                             } else tall = true;
-                            if(ratio > 2.5){
+                            if(ratio > 1.5){
                                 if(tall && Math.abs(Math.abs(temp.angle) - 14.5) < 22.5){
                                     goodContours.add(c);
                                 } else if(!tall && Math.abs(Math.abs(temp.angle) - 75.5) < 22.5){
@@ -166,10 +166,38 @@ public class VisionThread implements Runnable {
                         System.out.println("MinH: " + minH);
                         System.out.println("MaxH: " + maxH);*/
                         double xDiff = Math.abs(rr1.getCorner(0).x - rr2.getCorner(0).x);
-                        double theta = (xDiff/640) * 0.8901179;
+                        double aLength = (rr1.isTall) ? rr1.inst.size.width : rr1.inst.size.height;
+                        double bLength = (rr2.isTall) ? rr2.inst.size.width : rr2.inst.size.height;
+                        double avgLength = (aLength + bLength) / 2;
+                        double ratio = aLength/bLength;
+                        if(ratio > 1) ratio = 1/ratio;
+
+                        if(rr1.inst.center.x < rr2.inst.center.x){
+                            if(aLength < bLength){
+                                target = (rr1.inst.center.x + rr2.inst.center.x)/2 - (((1/ratio) - 1) * (320*2));
+                            } else{
+                                target = (rr1.inst.center.x + rr2.inst.center.x)/2 + (((1/ratio) - 1) * (320*2));
+                            }
+                        } else{
+                            if(aLength < bLength){
+                                target = (rr1.inst.center.x + rr2.inst.center.x)/2 + (((1/ratio) - 1) * (320*2));
+                            } else{
+                                target = (rr1.inst.center.x + rr2.inst.center.x)/2 - (((1/ratio) - 1) * (320*2));
+                            }
+                        }
+                        /*double theta = (xDiff/640) * 0.8901179; //0.8901179
                         double twoTan = Math.tan(theta/2);
                         double distance = 8/(2*twoTan); /*4/(Math.tan((xDiff * 51)/1280));*/
-                        System.out.println("distance: " + distance + " 2Tan: " + twoTan);
+
+                        double theta = (avgLength/640) * 0.8901179; //0.8901179
+                        double twoTan = Math.tan(theta/2);
+                        distance = 2/(2*twoTan);
+                        offset = target - 320;//((rr1.inst.center.x + rr2.inst.center.x)/2) - target;
+                        output.drawLine(320, Color.GREEN);
+                        output.drawLine((int)((rr1.inst.center.x + rr2.inst.center.x)/2), Color.ORANGE);
+                        output.drawLine((int)target, Color.RED);
+                        //System.out.println("distance: " + distance + " 2Tan: " + twoTan);
+                        //System.out.println("rr1: " + aLength + "rr2: " + bLength + "ratio: " + ratio);
                     } else {
                         //Log.v("More than two");
                     }
@@ -179,7 +207,7 @@ public class VisionThread implements Runnable {
                     //output.release();
 
                     for (Contour co : contours) {
-                        //co.release();
+                        co.release();
                     }
                 }
                 //source.release();
@@ -191,6 +219,14 @@ public class VisionThread implements Runnable {
     }
 
     private Mat weirdMat = new Mat();
+
+    public double getDistance(){
+        return distance;
+    }
+
+    public double getOffset(){
+        return offset;
+    }
 
     public void drawRotatedRect(Image img, RotatedRect rect, Color color) {
         Point points[] = new Point[4];

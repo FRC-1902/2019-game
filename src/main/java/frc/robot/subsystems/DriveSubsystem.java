@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.explodingbacon.bcnlib.actuators.MotorGroup;
+import com.explodingbacon.bcnlib.sensors.BNO055;
+import com.explodingbacon.bcnlib.sensors.BNOGyro;
 import com.explodingbacon.bcnlib.utils.Utils;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.VictorSP;
@@ -14,24 +16,27 @@ public class DriveSubsystem extends Subsystem {
 
     public Solenoid shift;
 
-    VictorSP leftDrive1;
-    VictorSP leftDrive2;
-    VictorSP leftDrive3;
-    VictorSP rightDrive1;
-    VictorSP rightDrive2;
-    VictorSP rightDrive3;
+    WPI_VictorSPX leftDrive1;
+    WPI_VictorSPX leftDrive2;
+    WPI_VictorSPX leftDrive3;
+    WPI_VictorSPX rightDrive1;
+    WPI_VictorSPX rightDrive2;
+    WPI_VictorSPX rightDrive3;
+    BNOGyro gyro;
 
     public DriveSubsystem() {
-        leftDrive1 = new VictorSP(RobotMap.DRIVE_LEFT_1);
-        leftDrive2 = new VictorSP(RobotMap.DRIVE_LEFT_2);
-        leftDrive3 = new VictorSP(RobotMap.DRIVE_LEFT_3);
-        rightDrive1 = new VictorSP(RobotMap.DRIVE_RIGHT_1);
-        rightDrive2 = new VictorSP(RobotMap.DRIVE_RIGHT_2);
-        rightDrive3 = new VictorSP(RobotMap.DRIVE_RIGHT_3);
+        leftDrive1 = new WPI_VictorSPX(RobotMap.DRIVE_LEFT_1);
+        leftDrive2 = new WPI_VictorSPX(RobotMap.DRIVE_LEFT_2);
+        leftDrive3 = new WPI_VictorSPX(RobotMap.DRIVE_LEFT_3);
+        rightDrive1 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_1);
+        rightDrive2 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_2);
+        rightDrive3 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_3);
         left = new MotorGroup(leftDrive1, leftDrive2, leftDrive3);
         left.setInverted(true);
         right = new MotorGroup(rightDrive1, rightDrive2, rightDrive3);
         shift = new Solenoid(RobotMap.SHIFTER_SOLENOID);
+        gyro = new BNOGyro(true);
+        gyro.rezero();
     }
 
     public void tankDrive(double leftPower, double rightPower) {
@@ -48,8 +53,24 @@ public class DriveSubsystem extends Subsystem {
         right.set(0);
     }
 
+    public void setLeft(double set){
+        left.set(set);
+    }
+
+    public void setRight(double set){
+        right.set(set);
+    }
+
     public void shift(boolean b) {
         shift.set(b);
+    }
+
+    public double getHeading(){
+        return gyro.getHeading();
+    }
+
+    public void resetGyro(){
+        gyro.rezero();
     }
 
     @Override

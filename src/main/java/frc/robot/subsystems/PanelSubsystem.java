@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.explodingbacon.bcnlib.framework.PIDController;
 import com.explodingbacon.bcnlib.sensors.AbstractEncoder;
@@ -8,15 +9,15 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 
-public class HatchSubsystem extends Subsystem {
+public class PanelSubsystem extends Subsystem {
     Encoder hatchEncoder;
-    public WPI_VictorSPX hatchArm;
+    public WPI_TalonSRX hatchArm;
     PIDController hatchPID;
     public Solenoid flipper;
     public Solenoid outtake;
 
-    public HatchSubsystem() {
-        hatchArm = new WPI_VictorSPX(RobotMap.HATCH_ARM);
+    public PanelSubsystem() {
+        hatchArm = new WPI_TalonSRX(RobotMap.HATCH_ARM);
         hatchEncoder = new Encoder(RobotMap.HATCH_ENCODER_PORT_A, RobotMap.HATCH_ENCODER_PORT_B);
         hatchEncoder.setPIDMode(AbstractEncoder.PIDMode.POSITION);
         hatchPID = new PIDController(hatchArm, hatchEncoder, 0, 0, 0);

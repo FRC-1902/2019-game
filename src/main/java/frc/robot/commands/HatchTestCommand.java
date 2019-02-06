@@ -24,7 +24,7 @@ public class HatchTestCommand extends Command {
     public void onLoop() {
         if (OI.manipController.x.get()) {
             if (flipRelease) {
-                Robot.hatchSubsystem.flipper.set(!Robot.hatchSubsystem.flipper.get());
+                Robot.panelSubsystem.flipper.set(!Robot.panelSubsystem.flipper.get());
                 flipRelease = false;
             }
         } else {
@@ -33,7 +33,7 @@ public class HatchTestCommand extends Command {
 
         if (OI.manipController.a.get()) {
             if (outtakeRelease) {
-                Robot.hatchSubsystem.outtake.set(!Robot.hatchSubsystem.outtake.get());
+                Robot.panelSubsystem.outtake.set(!Robot.panelSubsystem.outtake.get());
                 outtakeRelease = false;
             }
         } else {
@@ -42,7 +42,7 @@ public class HatchTestCommand extends Command {
 
         double val = Utils.deadzone(OI.manipController.getY(), 0.1);
         val *= 0.5;
-        Robot.hatchSubsystem.hatchArm.set(val);
+        Robot.panelSubsystem.hatchArm.set(val);
     }
 
     @Override
