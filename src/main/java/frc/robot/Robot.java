@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PanelSubsystem;
+import frc.robot.vision.VisionThread;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,7 +25,7 @@ import frc.robot.subsystems.PanelSubsystem;
  */
 public class Robot extends TimedRobot {
 
-   public static DriveSubsystem driveSubsystem;
+    public static DriveSubsystem driveSubsystem;
     public static PanelSubsystem panelSubsystem;
     public static VisionThread vision;
     UsbCamera camera;
@@ -100,9 +101,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-     driveSubsystem.shift(true);
-     driveSubsystem.left.testEachWait(0.5, 0.5);
-     driveSubsystem.right.testEachWait(0.5, 0.5);
+        driveSubsystem.shift(true);
+        driveSubsystem.left.testEachWait(0.5, 0.5);
+        driveSubsystem.right.testEachWait(0.5, 0.5);
     }
 
     @Override
@@ -111,6 +112,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-     OI.runCommand(new DriveCommand(this,vision));
+        OI.runCommand(new DriveCommand(this, vision));
     }
 }

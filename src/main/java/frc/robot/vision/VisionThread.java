@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.vision;
 
 import com.explodingbacon.bcnlib.framework.Log;
 import com.explodingbacon.bcnlib.vision.*;
@@ -9,10 +9,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
-import java.lang.reflect.Method;
-import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,11 +17,10 @@ public class VisionThread implements Runnable {
 
     public final int hLow = 60, sLow = 150, vLow = 50;
     public final int hHigh = 110, sHigh = 255, vHigh = 255;
+    Thread thread;
     private double distance, offset, target, targetCenter;
     private boolean targetIsValid;
-
-    Thread thread;
-
+    private Mat weirdMat = new Mat();
 
     public VisionThread() {
         thread = new Thread(this);
@@ -57,7 +53,7 @@ public class VisionThread implements Runnable {
 
         while (true) {
             targetIsValid = false;
-            try{
+            try {
                 long timeOfGet = System.currentTimeMillis();
                 cvSink.grabFrame(source.getMat());
 
@@ -85,37 +81,37 @@ public class VisionThread implements Runnable {
                             boolean tall;
                             temp = c.rotatedRect;
                             double ratio = temp.size.height / temp.size.width;
-                            if(ratio < 1) {
+                            if (ratio < 1) {
                                 ratio = 1 / ratio;
                                 tall = false;
                             } else tall = true;
-                            if(ratio > 1.5){
-                                if(tall && Math.abs(Math.abs(temp.angle) - 14.5) < 22.5){
+                            if (ratio > 1.5) {
+                                if (tall && Math.abs(Math.abs(temp.angle) - 14.5) < 22.5) {
                                     goodContours.add(c);
-                                } else if(!tall && Math.abs(Math.abs(temp.angle) - 75.5) < 22.5){
+                                } else if (!tall && Math.abs(Math.abs(temp.angle) - 75.5) < 22.5) {
                                     goodContours.add(c);
                                 }
                             }
                         }
                     }
 
-                    goodContours.sort((o1, o2) -> (int)(o2.getArea() - o1.getArea()));
+                    goodContours.sort((o1, o2) -> (int) (o2.getArea() - o1.getArea()));
                     List<Contour> finalContours = new ArrayList<>();
 
-                    if(goodContours.size() > 2){
+                    if (goodContours.size() > 2) {
                         // Filter for a pair of targets with angles of rotation roughly matching the goal
                         RotatedRect rr1 = goodContours.get(0).rotatedRect;
                         double targetAngle = rr1.size.height > rr1.size.width ? 75.5 : 14.5;
                         RotatedRect current;
                         int out = 0;
-                        for(int i = 1; i < goodContours.size(); i++){
+                        for (int i = 1; i < goodContours.size(); i++) {
                             current = goodContours.get(i).rotatedRect;
-                            if(Math.abs(Math.abs(current.angle) - targetAngle) < 22.5){
-                                if(rr1.size.height > rr1.size.width && current.center.x < rr1.center.x){
+                            if (Math.abs(Math.abs(current.angle) - targetAngle) < 22.5) {
+                                if (rr1.size.height > rr1.size.width && current.center.x < rr1.center.x) {
                                     out = i;
                                     //System.out.println("Found tall");
                                     break;
-                                } else if(rr1.size.height < rr1.size.width && current.center.x > rr1.center.x){
+                                } else if (rr1.size.height < rr1.size.width && current.center.x > rr1.center.x) {
                                     out = i;
                                     //System.out.println("Found short");
                                     break;
@@ -124,14 +120,14 @@ public class VisionThread implements Runnable {
                         }
                         finalContours.add(goodContours.get(0));
                         finalContours.add(goodContours.get(out));
-                    } else if(goodContours.size() == 2){
+                    } else if (goodContours.size() == 2) {
                         // If there is only two targets, assume they're the correct two targets. jk dont
                         RotatedRect rr1 = goodContours.get(0).rotatedRect;
                         RotatedRect current = goodContours.get(1).rotatedRect;
 
-                        if(rr1.size.height > rr1.size.width && current.center.x < rr1.center.x){
+                        if (rr1.size.height > rr1.size.width && current.center.x < rr1.center.x) {
                             finalContours = goodContours;
-                        } else if(rr1.size.height < rr1.size.width && current.center.x > rr1.center.x){
+                        } else if (rr1.size.height < rr1.size.width && current.center.x > rr1.center.x) {
                             finalContours = goodContours;
                         }
                     } else {
@@ -165,10 +161,10 @@ public class VisionThread implements Runnable {
                         //System.out.println("Angle 2: " + c2.rotatedRect.angle);
 
 
-                        drawRotatedRect(output,c1.rotatedRect,Color.YELLOW);
-                        drawRotatedRect(output,c2.rotatedRect,Color.YELLOW);
-                        output.drawCircle((int)rr1.getCorner(0).x, (int)rr1.getCorner(0).y, 5,Color.ORANGE);
-                        output.drawCircle((int)rr2.getCorner(0).x, (int)rr2.getCorner(0).y, 5,Color.ORANGE);
+                        drawRotatedRect(output, c1.rotatedRect, Color.YELLOW);
+                        drawRotatedRect(output, c2.rotatedRect, Color.YELLOW);
+                        output.drawCircle((int) rr1.getCorner(0).x, (int) rr1.getCorner(0).y, 5, Color.ORANGE);
+                        output.drawCircle((int) rr2.getCorner(0).x, (int) rr2.getCorner(0).y, 5, Color.ORANGE);
 
                         /*int minH = 255, maxH = 0, current;
                         double[] data;
@@ -187,36 +183,36 @@ public class VisionThread implements Runnable {
                         double aLength = (rr1.isTall) ? rr1.inst.size.width : rr1.inst.size.height;
                         double bLength = (rr2.isTall) ? rr2.inst.size.width : rr2.inst.size.height;
                         double avgLength = (aLength + bLength) / 2;
-                        double ratio = aLength/bLength;
-                        if(ratio > 1) ratio = 1/ratio;
-                        ratio = clamp(ratio,0.75,1);
+                        double ratio = aLength / bLength;
+                        if (ratio > 1) ratio = 1 / ratio;
+                        ratio = clamp(ratio, 0.75, 1);
                         //double targetOffset;
 
-                        if(rr1.inst.center.x < rr2.inst.center.x){
-                            if(aLength < bLength){
-                                target = (rr1.inst.center.x + rr2.inst.center.x)/2 - (((1/ratio) - 1) * (320*2));
-                            } else{
-                                target = (rr1.inst.center.x + rr2.inst.center.x)/2 + (((1/ratio) - 1) * (320*2));
+                        if (rr1.inst.center.x < rr2.inst.center.x) {
+                            if (aLength < bLength) {
+                                target = (rr1.inst.center.x + rr2.inst.center.x) / 2 - (((1 / ratio) - 1) * (320 * 2));
+                            } else {
+                                target = (rr1.inst.center.x + rr2.inst.center.x) / 2 + (((1 / ratio) - 1) * (320 * 2));
                             }
-                        } else{
-                            if(aLength < bLength){
-                                target = (rr1.inst.center.x + rr2.inst.center.x)/2 + (((1/ratio) - 1) * (320*2));
-                            } else{
-                                target = (rr1.inst.center.x + rr2.inst.center.x)/2 - (((1/ratio) - 1) * (320*2));
+                        } else {
+                            if (aLength < bLength) {
+                                target = (rr1.inst.center.x + rr2.inst.center.x) / 2 + (((1 / ratio) - 1) * (320 * 2));
+                            } else {
+                                target = (rr1.inst.center.x + rr2.inst.center.x) / 2 - (((1 / ratio) - 1) * (320 * 2));
                             }
                         }
                         /*double theta = (xDiff/640) * 0.8901179; //0.8901179
                         double twoTan = Math.tan(theta/2);
                         double distance = 8/(2*twoTan); /*4/(Math.tan((xDiff * 51)/1280));*/
 
-                        double theta = (avgLength/640) * 0.8901179; //0.8901179
-                        double twoTan = Math.tan(theta/2);
-                        distance = 2/(2*twoTan);
+                        double theta = (avgLength / 640) * 0.8901179; //0.8901179
+                        double twoTan = Math.tan(theta / 2);
+                        distance = 2 / (2 * twoTan);
                         offset = target - 320;//((rr1.inst.center.x + rr2.inst.center.x)/2) - target;
                         output.drawLine(320, Color.GREEN);
-                        targetCenter = (rr1.inst.center.x + rr2.inst.center.x)/2;
-                        output.drawLine((int)targetCenter, Color.ORANGE);
-                        output.drawLine((int)target, Color.RED);
+                        targetCenter = (rr1.inst.center.x + rr2.inst.center.x) / 2;
+                        output.drawLine((int) targetCenter, Color.ORANGE);
+                        output.drawLine((int) target, Color.RED);
                         //System.out.println("distance: " + distance + " 2Tan: " + twoTan);
                         //System.out.println("rr1: " + aLength + "rr2: " + bLength + "ratio: " + ratio);
                     } else {
@@ -232,32 +228,34 @@ public class VisionThread implements Runnable {
                     }
                 }
                 //source.release();
-            } catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
     }
 
-    private Mat weirdMat = new Mat();
-
-    public double getDistance(){
+    public double getDistance() {
         return distance;
     }
 
-    public double getOffset(){
+    public double getOffset() {
         return offset;
     }
 
-    public boolean getTargetIsValid(){return targetIsValid;}
+    public boolean getTargetIsValid() {
+        return targetIsValid;
+    }
 
-    public double getTargetCenter(){return targetCenter;}
+    public double getTargetCenter() {
+        return targetCenter;
+    }
 
     public void drawRotatedRect(Image img, RotatedRect rect, Color color) {
         Point points[] = new Point[4];
         rect.points(points);
-        for(int i=0; i<4; ++i){
-            Imgproc.line(img.getMat(), points[i], points[(i+1)%4], new Scalar(color.getRed(), color.getGreen(), color.getBlue()));
+        for (int i = 0; i < 4; ++i) {
+            Imgproc.line(img.getMat(), points[i], points[(i + 1) % 4], new Scalar(color.getRed(), color.getGreen(), color.getBlue()));
         }
     }
 
@@ -268,8 +266,8 @@ public class VisionThread implements Runnable {
         Imgproc.findContours(copy.getMat(), contours, weirdMat, 0, 2);
         Iterator var4 = contours.iterator();
 
-        while(var4.hasNext()) {
-            MatOfPoint mop = (MatOfPoint)var4.next();
+        while (var4.hasNext()) {
+            MatOfPoint mop = (MatOfPoint) var4.next();
             result.add(new Contour(mop));
         }
 
@@ -277,9 +275,9 @@ public class VisionThread implements Runnable {
         return result;
     }
 
-    public double clamp(double val, double min, double max){
-        if(val < min) return min;
-        else if(val > max) return max;
+    public double clamp(double val, double min, double max) {
+        if (val < min) return min;
+        else if (val > max) return max;
         else return val;
     }
 }
