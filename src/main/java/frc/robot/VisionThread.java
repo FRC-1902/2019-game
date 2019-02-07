@@ -2,7 +2,6 @@ package frc.robot;
 
 import com.explodingbacon.bcnlib.framework.Log;
 import com.explodingbacon.bcnlib.vision.*;
-import com.sun.javafx.geom.Vec3d;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
@@ -21,7 +20,8 @@ public class VisionThread implements Runnable {
 
     public final int hLow = 60, sLow = 150, vLow = 50;
     public final int hHigh = 110, sHigh = 255, vHigh = 255;
-    private double distance, offset, target;
+    private double distance, offset, target, targetCenter;
+    private boolean targetIsValid;
 
     Thread thread;
 
@@ -56,6 +56,7 @@ public class VisionThread implements Runnable {
         Log.v("Vision Processing online.");
 
         while (true) {
+            targetIsValid = false;
             try{
                 long timeOfGet = System.currentTimeMillis();
                 cvSink.grabFrame(source.getMat());
@@ -110,23 +111,41 @@ public class VisionThread implements Runnable {
                         for(int i = 1; i < goodContours.size(); i++){
                             current = goodContours.get(i).rotatedRect;
                             if(Math.abs(Math.abs(current.angle) - targetAngle) < 22.5){
-                                out = i;
-                                break;
+                                if(rr1.size.height > rr1.size.width && current.center.x < rr1.center.x){
+                                    out = i;
+                                    //System.out.println("Found tall");
+                                    break;
+                                } else if(rr1.size.height < rr1.size.width && current.center.x > rr1.center.x){
+                                    out = i;
+                                    //System.out.println("Found short");
+                                    break;
+                                }
                             }
                         }
                         finalContours.add(goodContours.get(0));
                         finalContours.add(goodContours.get(out));
                     } else if(goodContours.size() == 2){
-                        // If there is only two targets, assume they're the correct two targets.
-                        finalContours = goodContours;
+                        // If there is only two targets, assume they're the correct two targets. jk dont
+                        RotatedRect rr1 = goodContours.get(0).rotatedRect;
+                        RotatedRect current = goodContours.get(1).rotatedRect;
+
+                        if(rr1.size.height > rr1.size.width && current.center.x < rr1.center.x){
+                            finalContours = goodContours;
+                        } else if(rr1.size.height < rr1.size.width && current.center.x > rr1.center.x){
+                            finalContours = goodContours;
+                        }
                     } else {
-                        Log.e("Less than 2 potential vision targets seen");
+                        //Log.e("Less than 2 potential vision targets seen");
                     }
 
                     //We have only two contours left, the correct targets
                     if (finalContours.size() == 2) {
+                        targetIsValid = true;
                         Contour c1 = finalContours.get(0);
                         Contour c2 = finalContours.get(1);
+
+                        output.drawRectangle(c1.getBoundingBox(), Color.ORANGE);
+                        output.drawRectangle(c2.getBoundingBox(), Color.BLUE);
 
                         if (c1.coords.x > c2.coords.x) {
                             c1 = goodContours.get(1);
@@ -145,8 +164,7 @@ public class VisionThread implements Runnable {
                         //System.out.println("Angle 1: " + c1.rotatedRect.angle);
                         //System.out.println("Angle 2: " + c2.rotatedRect.angle);
 
-                        output.drawRectangle(r1, Color.BLUE);
-                        output.drawRectangle(r2, Color.BLUE);
+
                         drawRotatedRect(output,c1.rotatedRect,Color.YELLOW);
                         drawRotatedRect(output,c2.rotatedRect,Color.YELLOW);
                         output.drawCircle((int)rr1.getCorner(0).x, (int)rr1.getCorner(0).y, 5,Color.ORANGE);
@@ -171,6 +189,8 @@ public class VisionThread implements Runnable {
                         double avgLength = (aLength + bLength) / 2;
                         double ratio = aLength/bLength;
                         if(ratio > 1) ratio = 1/ratio;
+                        ratio = clamp(ratio,0.75,1);
+                        //double targetOffset;
 
                         if(rr1.inst.center.x < rr2.inst.center.x){
                             if(aLength < bLength){
@@ -194,7 +214,8 @@ public class VisionThread implements Runnable {
                         distance = 2/(2*twoTan);
                         offset = target - 320;//((rr1.inst.center.x + rr2.inst.center.x)/2) - target;
                         output.drawLine(320, Color.GREEN);
-                        output.drawLine((int)((rr1.inst.center.x + rr2.inst.center.x)/2), Color.ORANGE);
+                        targetCenter = (rr1.inst.center.x + rr2.inst.center.x)/2;
+                        output.drawLine((int)targetCenter, Color.ORANGE);
                         output.drawLine((int)target, Color.RED);
                         //System.out.println("distance: " + distance + " 2Tan: " + twoTan);
                         //System.out.println("rr1: " + aLength + "rr2: " + bLength + "ratio: " + ratio);
@@ -228,6 +249,10 @@ public class VisionThread implements Runnable {
         return offset;
     }
 
+    public boolean getTargetIsValid(){return targetIsValid;}
+
+    public double getTargetCenter(){return targetCenter;}
+
     public void drawRotatedRect(Image img, RotatedRect rect, Color color) {
         Point points[] = new Point[4];
         rect.points(points);
@@ -250,5 +275,11 @@ public class VisionThread implements Runnable {
 
         copy.release();
         return result;
+    }
+
+    public double clamp(double val, double min, double max){
+        if(val < min) return min;
+        else if(val > max) return max;
+        else return val;
     }
 }

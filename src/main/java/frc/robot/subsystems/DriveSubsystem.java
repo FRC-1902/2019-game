@@ -73,6 +73,8 @@ public class DriveSubsystem extends Subsystem {
         gyro.rezero();
     }
 
+    public BNOGyro getGyro(){return gyro;}
+
     @Override
     protected void initDefaultCommand() {
 
