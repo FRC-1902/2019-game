@@ -4,11 +4,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.explodingbacon.bcnlib.actuators.MotorGroup;
-import com.explodingbacon.bcnlib.sensors.BNO055;
 import com.explodingbacon.bcnlib.sensors.BNOGyro;
-import com.explodingbacon.bcnlib.utils.Utils;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.CanEncoder;
 import frc.robot.RobotMap;
@@ -57,11 +54,11 @@ public class DriveSubsystem extends Subsystem {
         right.set(0);
     }
 
-    public void setLeft(double set){
+    public void setLeft(double set) {
         left.set(set);
     }
 
-    public void setRight(double set){
+    public void setRight(double set) {
         right.set(set);
     }
 
@@ -69,15 +66,17 @@ public class DriveSubsystem extends Subsystem {
         shift.set(b);
     }
 
-    public double getHeading(){
+    public double getHeading() {
         return gyro.getHeading();
     }
 
-    public void resetGyro(){
+    public void resetGyro() {
         gyro.rezero();
     }
 
-    public BNOGyro getGyro(){return gyro;}
+    public BNOGyro getGyro() {
+        return gyro;
+    }
 
     public int getEncoderReading(){
         return -1;

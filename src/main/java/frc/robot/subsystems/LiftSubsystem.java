@@ -50,6 +50,8 @@ public class LiftSubsystem extends Subsystem {
 
         int value;
 
-        Position(int pos) { this.value = pos; }
+        Position(int pos) {
+            this.value = pos;
+        }
     }
 }
