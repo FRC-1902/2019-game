@@ -12,6 +12,7 @@ import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.PanelCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PanelSubsystem;
 
@@ -29,6 +30,7 @@ public class Robot extends TimedRobot {
     public static VisionThread vision;
     UsbCamera camera;
     MjpegServer server;
+    public static boolean OutBall = true;
 
     //Solenoid s;
 
@@ -65,7 +67,7 @@ public class Robot extends TimedRobot {
         vision.start();
     }
 
-    /**
+ /**
      * This function is called every robot packet, no matter the mode. Use
      * this for items like diagnostics that you want ran during disabled,
      * autonomous, teleoperated and test.
@@ -75,13 +77,18 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        //System.out.println("Server fps: " + server.getProperty("fps").get());
+     System.out.println("Encoder: " + panelSubsystem.hatchEncoder.getCurrentPosition());
+
+     //System.out.println("Server fps: " + server.getProperty("fps").get());
         //System.out.println("Compression: " + server.getProperty("compression").get());
 
         //System.out.println("FPS: " + usbCamera.getActualFPS());
         //System.out.println("Data Rate: " + usbCamera.getActualDataRate());
     }
 
+    @Override
+    public void disabledPeriodic() {
+    }
 
     @Override
     public void autonomousInit() {
@@ -111,6 +118,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-     OI.runCommand(new DriveCommand(this,vision));
+     OI.runCommand(new PanelCommand());
+     //OI.runCommand(new DriveCommand(this,vision));
     }
 }

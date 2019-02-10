@@ -21,6 +21,7 @@ public class VisionThread implements Runnable {
     public final int hLow = 60, sLow = 150, vLow = 50;
     public final int hHigh = 110, sHigh = 255, vHigh = 255;
     private double distance, offset, target, targetCenter;
+    private final int fieldWidth = 854;
     private boolean targetIsValid;
 
     Thread thread;
@@ -38,7 +39,7 @@ public class VisionThread implements Runnable {
     public void run() {
         UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
         camera.setFPS(5); //60
-        camera.setResolution(640, 480);
+        camera.setResolution(854, 480);
         camera.setExposureHoldCurrent();
         camera.setExposureManual(10);
 
@@ -48,7 +49,7 @@ public class VisionThread implements Runnable {
         //horizontal angle = 51 deg
 
         CvSink cvSink = CameraServer.getInstance().getVideo();
-        CvSource outputStream = CameraServer.getInstance().putVideo("Vision", 320, 240);
+        //CvSource outputStream = CameraServer.getInstance().putVideo("Vision", 854, 480);
 
         Image source = new Image();
         Image output = null;
@@ -209,12 +210,12 @@ public class VisionThread implements Runnable {
                         double twoTan = Math.tan(theta/2);
                         double distance = 8/(2*twoTan); /*4/(Math.tan((xDiff * 51)/1280));*/
 
-                        double theta = (avgLength/640) * 0.8901179; //0.8901179
+                        double theta = (avgLength/fieldWidth) * Math.toRadians(59.7); //0.8901179
                         double twoTan = Math.tan(theta/2);
                         distance = 2/(2*twoTan);
-                        offset = target - 320;//((rr1.inst.center.x + rr2.inst.center.x)/2) - target;
-                        output.drawLine(320, Color.GREEN);
-                        targetCenter = (rr1.inst.center.x + rr2.inst.center.x)/2;
+                        offset = target - 427;//((rr1.inst.center.x + rr2.inst.center.x)/2) - target;
+                        output.drawLine(427, Color.GREEN);
+                        targetCenter = (rr1.getCorner(0).x + rr2.getCorner(0).x)/2;
                         output.drawLine((int)targetCenter, Color.ORANGE);
                         output.drawLine((int)target, Color.RED);
                         //System.out.println("distance: " + distance + " 2Tan: " + twoTan);
@@ -224,7 +225,7 @@ public class VisionThread implements Runnable {
                     }
 
 
-                    outputStream.putFrame(output.getMat());
+                    //outputStream.putFrame(output.getMat());
                     //output.release();
 
                     for (Contour co : contours) {

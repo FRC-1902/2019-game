@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.explodingbacon.bcnlib.framework.PIDController;
@@ -7,35 +10,34 @@ import com.explodingbacon.bcnlib.sensors.AbstractEncoder;
 import com.explodingbacon.bcnlib.sensors.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.CanEncoder;
 import frc.robot.RobotMap;
 
+import static frc.robot.Robot.panelSubsystem;
+
 public class PanelSubsystem extends Subsystem {
-    Encoder hatchEncoder;
-    public WPI_TalonSRX hatchArm;
-    PIDController hatchPID;
-    public Solenoid flipper;
+    public CanEncoder hatchEncoder;
+    public TalonSRX hatchArm;
+    public PIDController hatchPID;
     public Solenoid outtake;
 
     public PanelSubsystem() {
-        hatchArm = new WPI_TalonSRX(RobotMap.HATCH_ARM);
-        hatchEncoder = new Encoder(RobotMap.HATCH_ENCODER_PORT_A, RobotMap.HATCH_ENCODER_PORT_B);
-        hatchEncoder.setPIDMode(AbstractEncoder.PIDMode.POSITION);
-        hatchPID = new PIDController(hatchArm, hatchEncoder, 0, 0, 0);
-        flipper = new Solenoid(RobotMap.FLIPPER_SOLENOID);
+        hatchArm = new TalonSRX(RobotMap.HATCH_ARM);
+        hatchArm.setNeutralMode(NeutralMode.Brake);
+        hatchArm.setSensorPhase(true);
+        hatchEncoder = new CanEncoder(hatchArm);
+        hatchEncoder.reset();
+
+        hatchPID = new PIDController(null, hatchEncoder, 0.00005, 0.00004, -0.0001); //0.0003 to 0.000165
         outtake = new Solenoid(RobotMap.OUTTAKE_SOLENOID);
     }
 
-    public void setHatchPosition(HatchPosition pos) {
-        if (pos.value == 0){
-            flipper.set(true);
-        }else {
-            flipper.set(false);
-        }
-        hatchPID.setTarget(pos.value);
+    public void setHatchArm(double pow) {
+        hatchArm.set(ControlMode.PercentOutput, -pow);
     }
 
-    public void outtake() {
-        outtake.set(true);
+    public void setOuttake(boolean out) {
+        outtake.set(out);
     }
 
 
@@ -47,12 +49,5 @@ public class PanelSubsystem extends Subsystem {
     @Override
     public void setName(String subsystem, String name) {
 
-    }
-    public enum HatchPosition {
-        UP(0), DOWN(0);
-
-        int value;
-
-        HatchPosition(int pos){ this.value = pos;}
     }
 }
