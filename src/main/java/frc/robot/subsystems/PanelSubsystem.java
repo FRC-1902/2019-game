@@ -25,10 +25,10 @@ public class PanelSubsystem extends Subsystem {
         hatchArm = new TalonSRX(RobotMap.HATCH_ARM);
         hatchArm.setNeutralMode(NeutralMode.Brake);
         hatchArm.setSensorPhase(true);
-        hatchEncoder = new CanEncoder(hatchArm);
+        hatchEncoder = new CanEncoder(RobotMap.INTAKE_ARM);
         hatchEncoder.reset();
 
-        hatchPID = new PIDController(null, hatchEncoder, 0.00005, 0.00004, -0.0001); //0.0003 to 0.000165
+        hatchPID = new PIDController(null, hatchEncoder, 0.001, 0, 0); //0.0003 to 0.000165
         outtake = new Solenoid(RobotMap.OUTTAKE_SOLENOID);
     }
 
@@ -39,7 +39,6 @@ public class PanelSubsystem extends Subsystem {
     public void setOuttake(boolean out) {
         outtake.set(out);
     }
-
 
     @Override
     protected void initDefaultCommand() {

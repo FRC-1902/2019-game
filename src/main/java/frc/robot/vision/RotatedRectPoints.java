@@ -4,9 +4,9 @@ import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
 
 public class RotatedRectPoints {
-    RotatedRect inst;
-    boolean isTall;
-    Point[] points = new Point[4], corners = new Point[4];
+    public RotatedRect inst;
+    public boolean isTall;
+    public Point[] points = new Point[4], corners = new Point[4];
 
     //0 is centermost point, then highest point, etc
     public RotatedRectPoints(RotatedRect rect) {

@@ -5,6 +5,7 @@ import com.explodingbacon.bcnlib.actuators.MotorGroup;
 import com.explodingbacon.bcnlib.framework.PIDController;
 import com.explodingbacon.bcnlib.sensors.AbstractEncoder;
 import com.explodingbacon.bcnlib.sensors.Encoder;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 
@@ -13,7 +14,8 @@ public class LiftSubsystem extends Subsystem {
     WPI_VictorSPX lift1, lift2, lift3, lift4;
     PIDController liftPID;
     MotorGroup lift;
-    Position currentLiftPosition;
+    LiftPosition currentLiftPosition;
+    AnalogPotentiometer pot;
 
     public LiftSubsystem() {
         lift1 = new WPI_VictorSPX(RobotMap.LIFT_1);
@@ -26,7 +28,11 @@ public class LiftSubsystem extends Subsystem {
         liftPID = new PIDController(lift, liftEncoder, 0, 0, 0);
     }
 
-    public void set(Position pos) {
+    public void setPower(double pow){
+        lift.set(pow);
+    }
+
+    public void setPosition(LiftPosition pos) {
         liftPID.setTarget(pos.value);
         currentLiftPosition = pos;
     }
@@ -45,12 +51,12 @@ public class LiftSubsystem extends Subsystem {
 
     }
 
-    public enum Position {
-        GROUND(0), SCORE_1(0), SCORE_2(0), SCORE_3(0);
+    public enum LiftPosition {
+        GROUND(0), HATCH_1(0), CARGO_1(0), CARGO_SHIP(0), HATCH_2(0), CARGO_2(0), HATCH_3(0), CARGO_3(0);
 
         int value;
 
-        Position(int pos) {
+        LiftPosition(int pos) {
             this.value = pos;
         }
     }

@@ -13,7 +13,7 @@ public class PanelCommand extends Command {
     @Override
     public void onInit() {
         panelSubsystem.hatchPID.setTarget(panelSubsystem.hatchEncoder.getCurrentPosition());
-        panelSubsystem.hatchPID.enable();
+        panelSubsystem.hatchPID.enable(); //67.375 to 137.5 : 2.041
     }
 
     //250 straight up, 3000 straight out
@@ -21,11 +21,12 @@ public class PanelCommand extends Command {
     @Override
     public void onLoop() {
         //panelSubsystem.hatchPID.logVerbose();
+        //System.out.println("Encoder: " + panelSubsystem.hatchEncoder.getCurrentPosition());
 
         if (OI.driveController.y.get()) {
-            panelSubsystem.hatchPID.setTarget(110);
+            panelSubsystem.hatchPID.setTarget(50); //110
         } else if (OI.driveController.b.get()) {
-            panelSubsystem.hatchPID.setTarget(1650);
+            panelSubsystem.hatchPID.setTarget(1650); //1650
         }
         if (!OI.driveController.rightBumper.get()) {
             double pow = panelSubsystem.hatchPID.getMotorPower();

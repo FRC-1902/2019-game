@@ -6,6 +6,7 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import frc.robot.vision.RotatedRectPoints;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 

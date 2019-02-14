@@ -74,11 +74,11 @@ public class DriveCommand extends Command {
         }
 
         if(OI.driveController.a.get()) {
-            driveSubsystem.setLeft(0.75);
-            driveSubsystem.setRight(0);
+            //driveSubsystem.setLeft(0.75);
+            //driveSubsystem.setRight(0);
         } else if(OI.driveController.b.get()) {
-            driveSubsystem.setRight(0.75);
-            driveSubsystem.setLeft(0);
+            //driveSubsystem.setRight(0.75);
+            //driveSubsystem.setLeft(0);
         } else if(OI.driveController.x.get() && hasVision){
             /*try{
                 double distance = vision.getDistance();
@@ -96,7 +96,7 @@ public class DriveCommand extends Command {
             autoLock.run();
         } else{
             driveSubsystem.arcadeDrive(x, y);
-            System.out.println("Heading: " + driveSubsystem.getHeading());
+            //System.out.println("Heading: " + driveSubsystem.getHeading());
         }
 
 

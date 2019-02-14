@@ -21,10 +21,8 @@ public class RevColorDistance {
         byte[] upper = new byte[2];
         sensor.read(CMD_REGISTER | 0x1c,2, lower);
         return lower;
-        /*.read(0x12,1,upper);
-        byte[] out = new byte[2];
-        out[0] = lower[0];
-        out[1] = lower[1];
-        return out;*/
+        /*ByteBuffer upper = ByteBuffer.allocate(2);
+        sensor.read(0x12,1,upper);
+        return upper;*/
     }
 }
