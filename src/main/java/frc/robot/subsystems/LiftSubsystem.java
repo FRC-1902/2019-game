@@ -7,15 +7,15 @@ import com.explodingbacon.bcnlib.sensors.AbstractEncoder;
 import com.explodingbacon.bcnlib.sensors.Encoder;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.Potentiometer;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
-    Encoder liftEncoder;
     WPI_VictorSPX lift1, lift2, lift3, lift4;
     PIDController liftPID;
     MotorGroup lift;
     LiftPosition currentLiftPosition;
-    AnalogPotentiometer pot;
+    public Potentiometer pot;
 
     public LiftSubsystem() {
         lift1 = new WPI_VictorSPX(RobotMap.LIFT_1);
@@ -23,9 +23,8 @@ public class LiftSubsystem extends Subsystem {
         lift3 = new WPI_VictorSPX(RobotMap.LIFT_3);
         lift4 = new WPI_VictorSPX(RobotMap.LIFT_4);
         lift = new MotorGroup(lift1, lift2, lift3, lift4);
-        liftEncoder = new Encoder(RobotMap.LIFT_ENCODER_PORT_A, RobotMap.LIFT_ENCODER_PORT_B);
-        liftEncoder.setPIDMode(AbstractEncoder.PIDMode.POSITION);
-        liftPID = new PIDController(lift, liftEncoder, 0, 0, 0);
+        pot = new Potentiometer(RobotMap.LIFT_POTENTIOMETER);
+        liftPID = new PIDController(lift, pot, 0, 0, 0);
     }
 
     public void setPower(double pow){

@@ -13,6 +13,7 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import frc.robot.vision.VisionThread;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,7 +29,7 @@ public class Robot extends TimedRobot {
     public static LiftSubsystem liftSubsystem;
     public static IntakeSubsystem intakeSubsystem;
     public static OutBallSubsystem outBallSubsystem;
-    public static frc.robot.VisionThread vision;
+    public static VisionThread vision;
     UsbCamera camera;
     MjpegServer server;
     public static boolean OutBall = true;
@@ -65,10 +66,10 @@ public class Robot extends TimedRobot {
         outBallSubsystem = new OutBallSubsystem();
 
 
-        //Vision.init();
-        //vision = new frc.robot.VisionThread();
+        Vision.init();
+        vision = new VisionThread();
 
-        //vision.start();
+        vision.start();
     }
 
  /**
@@ -109,7 +110,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-     driveSubsystem.shift(true);
+     driveSubsystem.shift(false);
      driveSubsystem.left.testEachWait(0.5, 0.5);
      driveSubsystem.right.testEachWait(0.5, 0.5);
     }
@@ -120,10 +121,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-     OI.runCommand(new PanelCommand());
+     //OI.runCommand(new PanelCommand());
      OI.runCommand(new DriveCommand(this,vision));
-        //OI.runCommand(new LiftCommand(this));
-        OI.runCommand(new IntakeCommand(this));
+        OI.runCommand(new LiftCommand(this));
+        //OI.runCommand(new IntakeCommand(this));
         //OI.runCommand(new OutBallCommand(this));
     }
 }

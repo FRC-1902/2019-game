@@ -2,8 +2,7 @@ package frc.robot;
 
 public class RobotMap {
 
-    public static final int LIFT_ENCODER_PORT_A = Robot.OutBall ? 0 : -1;
-    public static final int LIFT_ENCODER_PORT_B = Robot.OutBall ? 1 : -1;
+    public static final int LIFT_POTENTIOMETER = Robot.OutBall ? 0 : -1;
 
     // CAN IDs
 

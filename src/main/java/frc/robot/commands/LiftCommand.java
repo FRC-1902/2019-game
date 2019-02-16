@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import com.explodingbacon.bcnlib.framework.Command;
+import com.explodingbacon.bcnlib.utils.Utils;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.subsystems.LiftSubsystem;
@@ -19,8 +20,9 @@ public class LiftCommand extends Command {
 
     @Override
     public void onLoop() {
-        liftSubsystem.setPower((OI.driveController.getLeftTrigger() * 0.2) + (OI.driveController.getRightTrigger() * -0.2));
-        System.out.println("Power: " + (OI.driveController.getLeftTrigger() * 0.2) + (OI.driveController.getRightTrigger() * -0.2));
+        System.out.println(Utils.roundToDecimals((double)(float)((liftSubsystem.pot.getCurrentPosition())), 5));
+        //liftSubsystem.setPower((OI.manipController.getLeftTrigger() * 0.2) + (OI.manipController.getRightTrigger() * -0.2));
+        //System.out.println("Power: " + (OI.manipController.getLeftTrigger() * 0.2) + (OI.manipController.getRightTrigger() * -0.2));
     }
 
     @Override

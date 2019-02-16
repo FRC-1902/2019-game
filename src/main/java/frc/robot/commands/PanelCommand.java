@@ -21,27 +21,33 @@ public class PanelCommand extends Command {
     @Override
     public void onLoop() {
         //panelSubsystem.hatchPID.logVerbose();
-        //System.out.println("Encoder: " + panelSubsystem.hatchEncoder.getCurrentPosition());
+        System.out.println("Encoder: " + panelSubsystem.hatchEncoder.getCurrentPosition());
 
-        if (OI.driveController.y.get()) {
+        if (OI.manipController.y.get()) {
             panelSubsystem.hatchPID.setTarget(50); //110
-        } else if (OI.driveController.b.get()) {
-            panelSubsystem.hatchPID.setTarget(1650); //1650
+        } else if (OI.manipController.b.get()) {
+            panelSubsystem.hatchPID.setTarget(1350); //1650
+        } else if(OI.manipController.x.get()){
+            panelSubsystem.hatchPID.setTarget(1500);
+        } else if (OI.driveController.getDPad().isUp()){
+            panelSubsystem.hatchPID.setTarget(50);
         }
-        if (!OI.driveController.rightBumper.get()) {
+
+        if (!OI.manipController.rightBumper.get()) {
             double pow = panelSubsystem.hatchPID.getMotorPower();
             pow = Utils.cap(pow, 0.5);
             panelSubsystem.setHatchArm(pow);
         } else {
 
-            double pow = Utils.deadzone(OI.driveController.getY(), 0.1);
+            double pow = Utils.deadzone(OI.manipController.getY(), 0.1);
             //pow *= 0.5;
             //System.out.println("Pow: " + pow);
             panelSubsystem.setHatchArm(pow);
         }
 
-        if(OI.driveController.a.get()){
+        if(OI.manipController.leftTrigger.get()){
             panelSubsystem.setOuttake(true);
+            panelSubsystem.hatchPID.setTarget(1400);
         } else{
             panelSubsystem.setOuttake(false);
         }

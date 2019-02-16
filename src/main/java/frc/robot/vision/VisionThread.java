@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.vision;
 
 import com.explodingbacon.bcnlib.framework.Log;
 import com.explodingbacon.bcnlib.vision.*;
@@ -50,7 +50,7 @@ public class VisionThread implements Runnable {
         //horizontal angle = 51 deg
 
         CvSink cvSink = CameraServer.getInstance().getVideo();
-        //CvSource outputStream = CameraServer.getInstance().putVideo("Vision", 854, 480);
+        CvSource outputStream = CameraServer.getInstance().putVideo("Vision", 854, 480);
 
         Image source = new Image();
         Image output = null;
@@ -226,8 +226,8 @@ public class VisionThread implements Runnable {
                     }
 
 
-                    //outputStream.putFrame(output.getMat());
-                    //output.release();
+                    outputStream.putFrame(output.getMat());
+                    output.release();
 
                     for (Contour co : contours) {
                         co.release();

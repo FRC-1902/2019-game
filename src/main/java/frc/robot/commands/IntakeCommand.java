@@ -34,11 +34,12 @@ public class IntakeCommand extends Command {
     @Override
     public void onLoop() {
 
-        //intakeSubsystem.setArmPower(OI.driveController.getY() * 0.5);
-        System.out.println("Encoder: " + intakeSubsystem.intakeEncoder.getCurrentPosition() + " PID: " + intakeSubsystem.intakePID.getMotorPower() + " Arm Power: " + intakeSubsystem.intakeArm.getMotorOutputPercent());
+        //intakeSubsystem.setArmPower(OI.manipController.getY() * 0.5);
+        //System.out.println("Encoder: " + intakeSubsystem.intakeEncoder.getCurrentPosition() + " PID: " + intakeSubsystem.intakePID.getMotorPower() + " Arm Power: " + intakeSubsystem.intakeArm.getMotorOutputPercent());
+        //intakeSubsystem.intakePID.logVerbose();
 
-        if(OI.driveController.x.get()){
-            intakeSubsystem.intakePID.setTarget(1060);
+        if(OI.manipController.x.get()){
+            intakeSubsystem.intakePID.setTarget(1000);
         } else{
             intakeSubsystem.intakePID.setTarget(0);
         }
@@ -50,7 +51,7 @@ public class IntakeCommand extends Command {
         dist = intakeSubsystem.distance.getDistance();
         int dInt = Byte.toUnsignedInt(dist.get(1)) * 256 + Byte.toUnsignedInt(dist.get(0));
 
-        if(OI.driveController.getDPad().isDown() && dInt < 1000){
+        if(OI.manipController.getDPad().isDown() && dInt < 1000){
             intakeSubsystem.setIntakePower(1);
             intakeSubsystem.setConveyorPower(-1);
             outBallSubsystem.set(0.2);
@@ -69,9 +70,9 @@ public class IntakeCommand extends Command {
 
                 isDelay = false;
             }
-            //intakeSubsystem.setIntakePower(OI.driveController.getY2());
-            intakeSubsystem.setConveyorPower(-OI.driveController.getRightTrigger());
-            outBallSubsystem.set(OI.driveController.getLeftTrigger());
+            intakeSubsystem.setIntakePower(0);
+            intakeSubsystem.setConveyorPower(-OI.manipController.getRightTrigger());
+            outBallSubsystem.set(OI.manipController.getLeftTrigger());
         }
 
         //System.out.println("Upper: " + Byte.toUnsignedInt(dist.get(1)) + " Lower: " + Byte.toUnsignedInt(dist.get(0)) + " Distance: " + dInt);

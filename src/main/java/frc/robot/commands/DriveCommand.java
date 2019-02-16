@@ -7,7 +7,7 @@ import com.explodingbacon.bcnlib.utils.Utils;
 import frc.robot.OI;
 import frc.robot.RevColorDistance;
 import frc.robot.Robot;
-import frc.robot.VisionThread;
+import frc.robot.vision.VisionThread;
 import frc.robot.subsystems.DriveSubsystem;
 
 import java.io.ByteArrayInputStream;
@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
 public class DriveCommand extends Command {
     Robot robot;
     DriveSubsystem driveSubsystem;
-    boolean hasVision, shiftToggle = false, isShifted = false;
+    boolean hasVision, shiftToggle = false, isShifted = true;
     VisionThread vision;
     ByteBuffer dist;
     ByteArrayInputStream byteStream;
@@ -73,13 +73,7 @@ public class DriveCommand extends Command {
             driveSubsystem.resetGyro();
         }
 
-        if(OI.driveController.a.get()) {
-            //driveSubsystem.setLeft(0.75);
-            //driveSubsystem.setRight(0);
-        } else if(OI.driveController.b.get()) {
-            //driveSubsystem.setRight(0.75);
-            //driveSubsystem.setLeft(0);
-        } else if(OI.driveController.x.get() && hasVision){
+        if(OI.driveController.x.get() && hasVision){
             /*try{
                 double distance = vision.getDistance();
                 if(distance > 35 && vision.getTargetIsValid()){
@@ -94,7 +88,9 @@ public class DriveCommand extends Command {
             }*/
             driveSubsystem.arcadeDrive(0,0);
             autoLock.run();
-        } else{
+        } else if(OI.driveController.getDPad().isUp()){
+            driveSubsystem.arcadeDrive(0,-0.5);
+        } else {
             driveSubsystem.arcadeDrive(x, y);
             //System.out.println("Heading: " + driveSubsystem.getHeading());
         }
@@ -116,17 +112,17 @@ public class DriveCommand extends Command {
         @Override
         public void run() {
             if(vision.getTargetIsValid()){
-                driveSubsystem.shift(false);
-                PIDController turn = new PIDController(null, driveSubsystem.getGyro(), 0.04, 0.001,0);
+                driveSubsystem.shift(true);
+                PIDController turn = new PIDController(null, driveSubsystem.getGyro(), 0.02, 0.005,0);
                 turn.setRotational(true);
-                turn.setFinishedTolerance(2);
+                turn.setFinishedTolerance(0.5);
                 turn.enable();
                 double angleOffset = (vision.getTargetCenter() - 427) * (59.7/854);
                 turn.setTarget(driveSubsystem.getHeading() + angleOffset);
                 long lastTime = System.currentTimeMillis();
                 while(!turn.isDone() && OI.driveController.x.get()){ //Math.abs(vision.getTargetCenter() - 320) > 45
                     driveSubsystem.arcadeDrive(turn.getMotorPower(), 0);
-                    System.out.println("Error: " + turn.getCurrentError() + " Latency : " + (System.currentTimeMillis() - lastTime));
+                    System.out.println("(Locked) Error: " + turn.getCurrentError() + " Latency : " + (System.currentTimeMillis() - lastTime));
                     lastTime = System.currentTimeMillis();
                     try {
                             Thread.sleep(15);
