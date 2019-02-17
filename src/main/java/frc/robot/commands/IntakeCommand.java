@@ -16,6 +16,7 @@ public class IntakeCommand extends Command {
     double pidOutput;
     OutBallSubsystem outBallSubsystem;
     boolean isDelay = false;
+    long outTakeTimer = 0;
 
     public IntakeCommand(Robot robot){
         intakeSubsystem = robot.intakeSubsystem;
@@ -35,13 +36,15 @@ public class IntakeCommand extends Command {
     public void onLoop() {
 
         //intakeSubsystem.setArmPower(OI.manipController.getY() * 0.5);
-        //System.out.println("Encoder: " + intakeSubsystem.intakeEncoder.getCurrentPosition() + " PID: " + intakeSubsystem.intakePID.getMotorPower() + " Arm Power: " + intakeSubsystem.intakeArm.getMotorOutputPercent());
+        System.out.println("Encoder: " + intakeSubsystem.intakeEncoder.getCurrentPosition() + " PID: " + intakeSubsystem.intakePID.getMotorPower() + " Arm Power: " + intakeSubsystem.intakeArm.getMotorOutputPercent());
         //intakeSubsystem.intakePID.logVerbose();
 
-        if(OI.manipController.x.get()){
-            intakeSubsystem.intakePID.setTarget(1000);
+        if(OI.manipController.getDPad().isDown()){
+            intakeSubsystem.intakePID.setTarget(1050);
+            intakeSubsystem.intakePID.setGravityMode(true, -1);
         } else{
-            intakeSubsystem.intakePID.setTarget(0);
+            intakeSubsystem.intakePID.setTarget(50);
+            intakeSubsystem.intakePID.setGravityMode(false, -1);
         }
 
             pidOutput = intakeSubsystem.intakePID.getMotorPower();
@@ -52,15 +55,30 @@ public class IntakeCommand extends Command {
         int dInt = Byte.toUnsignedInt(dist.get(1)) * 256 + Byte.toUnsignedInt(dist.get(0));
 
         if(OI.manipController.getDPad().isDown() && dInt < 1000){
-            intakeSubsystem.setIntakePower(1);
-            intakeSubsystem.setConveyorPower(-1);
-            outBallSubsystem.set(0.2);
-            isDelay = true;
-        } else{
-            if(isDelay){
+            /*if(outTakeTimer == 0){
+                outTakeTimer = System.currentTimeMillis();
+            }
+            if(System.currentTimeMillis() - outTakeTimer < 2000){
+                outBallSubsystem.set(0.2);
                 intakeSubsystem.setIntakePower(1);
                 intakeSubsystem.setConveyorPower(-1);
-                outBallSubsystem.set(0.2);
+            } else if((System.currentTimeMillis() - outTakeTimer) < 2500){
+                outBallSubsystem.set(0);
+                intakeSubsystem.setIntakePower(0);
+                intakeSubsystem.setConveyorPower(0);
+            } else{
+                outBallSubsystem.set(0.4);
+                intakeSubsystem.setConveyorPower(-1);
+            }*/
+            outBallSubsystem.set(0.4);
+            intakeSubsystem.setIntakePower(1);
+            intakeSubsystem.setConveyorPower(-1);
+            //isDelay = true;
+        } else{
+            /*if(isDelay){
+                intakeSubsystem.setIntakePower(1);
+                intakeSubsystem.setConveyorPower(-1);
+                outBallSubsystem.set(0.4);
 
                 try {
                     Thread.sleep(200);
@@ -69,10 +87,11 @@ public class IntakeCommand extends Command {
                 }
 
                 isDelay = false;
-            }
+            }*/
             intakeSubsystem.setIntakePower(0);
             intakeSubsystem.setConveyorPower(-OI.manipController.getRightTrigger());
             outBallSubsystem.set(OI.manipController.getLeftTrigger());
+            outTakeTimer = 0;
         }
 
         //System.out.println("Upper: " + Byte.toUnsignedInt(dist.get(1)) + " Lower: " + Byte.toUnsignedInt(dist.get(0)) + " Distance: " + dInt);

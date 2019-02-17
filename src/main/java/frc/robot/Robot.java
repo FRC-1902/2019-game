@@ -4,7 +4,16 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
+/*
+          ______    __    __  .___________.   .______        ___       __       __
+         /  __  \  |  |  |  | |           |   |   _  \      /   \     |  |     |  |
+        |  |  |  | |  |  |  | `---|  |----`   |  |_)  |    /  ^  \    |  |     |  |
+        |  |  |  | |  |  |  |     |  |        |   _  <    /  /_\  \   |  |     |  |
+        |  `--'  | |  `--'  |     |  |        |  |_)  |  /  _____  \  |  `----.|  `----.
+         \______/   \______/      |__|        |______/  /__/     \__\ |_______||_______|
 
+    Credit: "2 hours" lmao
+*/
 package frc.robot;
 
 import com.explodingbacon.bcnlib.vision.Vision;
@@ -122,7 +131,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
      //OI.runCommand(new PanelCommand());
-     OI.runCommand(new DriveCommand(this,vision));
+     //OI.runCommand(new DriveCommand(this,vision));
         OI.runCommand(new LiftCommand(this));
         //OI.runCommand(new IntakeCommand(this));
         //OI.runCommand(new OutBallCommand(this));

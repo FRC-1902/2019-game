@@ -41,7 +41,8 @@ public class IntakeSubsystem extends Subsystem {
         distance = new RevColorDistance();
         intakeEncoder.reset();
 
-        intakePID = new PIDController(null, intakeEncoder, 0.0005, 0.001, 0);
+        intakePID = new PIDController(null, intakeEncoder, 0.001, 0.00005, 0); //0.0005 i:00001
+        //intakePID.setGravityMode(true, -1);
     }
 
     public void setArmPower(double pow) {

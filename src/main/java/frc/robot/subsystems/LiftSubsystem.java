@@ -11,7 +11,7 @@ import frc.robot.Potentiometer;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
-    WPI_VictorSPX lift1, lift2, lift3, lift4;
+    public WPI_VictorSPX lift1, lift2, lift3, lift4;
     PIDController liftPID;
     MotorGroup lift;
     LiftPosition currentLiftPosition;

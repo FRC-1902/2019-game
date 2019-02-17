@@ -22,7 +22,11 @@ public class LiftCommand extends Command {
     public void onLoop() {
         System.out.println(Utils.roundToDecimals((double)(float)((liftSubsystem.pot.getCurrentPosition())), 5));
         //liftSubsystem.setPower((OI.manipController.getLeftTrigger() * 0.2) + (OI.manipController.getRightTrigger() * -0.2));
-        //System.out.println("Power: " + (OI.manipController.getLeftTrigger() * 0.2) + (OI.manipController.getRightTrigger() * -0.2));
+        liftSubsystem.lift1.set(OI.manipController.getLeftTrigger());
+        liftSubsystem.lift2.set(OI.manipController.getRightTrigger());
+        liftSubsystem.lift3.set(OI.manipController.getY());
+        liftSubsystem.lift4.set(OI.manipController.getY2());
+        System.out.println("Power: " + (OI.manipController.getLeftTrigger() * 0.2) + (OI.manipController.getRightTrigger() * -0.2));
     }
 
     @Override

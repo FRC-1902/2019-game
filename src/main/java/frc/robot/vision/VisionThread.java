@@ -42,7 +42,7 @@ public class VisionThread implements Runnable {
         camera.setFPS(5); //60
         camera.setResolution(854, 480);
         camera.setExposureHoldCurrent();
-        camera.setExposureManual(10);
+        camera.setExposureManual(20);
 
         //d: 45.5
         //w: 43
@@ -172,6 +172,13 @@ public class VisionThread implements Runnable {
                         output.drawCircle((int)rr1.getCorner(0).x, (int)rr1.getCorner(0).y, 5,Color.ORANGE);
                         output.drawCircle((int)rr2.getCorner(0).x, (int)rr2.getCorner(0).y, 5,Color.ORANGE);
 
+                        Point p1 = new Point((int)((rr1.getCorner(0).x + rr2.getCorner(0).x)/2), (int)((rr1.getCorner(0).y + rr2.getCorner(0).y)/2));
+                        double slope = Math.atan2(rr2.getCorner(0).x - rr2.getCorner(0).x, rr2.getCorner(0).y - rr2.getCorner(0).y);
+                        Point p2 = new Point(p1.x + (int)(500 * Math.sin(slope)), p1.y + (int)(500 * Math.cos(slope)));
+
+                        Imgproc.line(output.getMat(), rr1.getCorner(0), rr2.getCorner(0), new Scalar(Color.ORANGE.getRed(), Color.ORANGE.getGreen(), Color.ORANGE.getBlue()), 3);
+                        Imgproc.line(output.getMat(), p1, p2, new Scalar(Color.ORANGE.getRed(), Color.ORANGE.getGreen(), Color.ORANGE.getBlue()), 3);
+
                         /*int minH = 255, maxH = 0, current;
                         double[] data;
                         //Scalar dataRGB, dataHSV = new Scalar(0);
@@ -218,7 +225,7 @@ public class VisionThread implements Runnable {
                         output.drawLine(427, Color.GREEN);
                         targetCenter = (rr1.getCorner(0).x + rr2.getCorner(0).x)/2;
                         output.drawLine((int)targetCenter, Color.ORANGE);
-                        output.drawLine((int)target, Color.RED);
+                        //output.drawLine((int)target, Color.RED);
                         //System.out.println("distance: " + distance + " 2Tan: " + twoTan);
                         //System.out.println("rr1: " + aLength + "rr2: " + bLength + "ratio: " + ratio);
                     } else {
