@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
     public static VisionThread vision;
     UsbCamera camera;
     MjpegServer server;
-    public static boolean OutBall = true;
+    public static boolean OutBall = false;
 
     //Solenoid s;
 
@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
         driveSubsystem = new DriveSubsystem();
         panelSubsystem = new PanelSubsystem();
         intakeSubsystem = new IntakeSubsystem();
-        liftSubsystem = new LiftSubsystem();
+        //liftSubsystem = new LiftSubsystem();
         outBallSubsystem = new OutBallSubsystem();
 
 
@@ -130,10 +130,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-     //OI.runCommand(new PanelCommand());
-     //OI.runCommand(new DriveCommand(this,vision));
-        OI.runCommand(new LiftCommand(this));
-        //OI.runCommand(new IntakeCommand(this));
+     OI.runCommand(new PanelCommand());
+     OI.runCommand(new DriveCommand(this,vision));
+        //OI.runCommand(new LiftCommand(this));
+        OI.runCommand(new IntakeCommand(this));
         //OI.runCommand(new OutBallCommand(this));
     }
 }

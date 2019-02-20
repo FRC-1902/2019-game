@@ -40,11 +40,11 @@ public class IntakeCommand extends Command {
         //intakeSubsystem.intakePID.logVerbose();
 
         if(OI.manipController.getDPad().isDown()){
-            intakeSubsystem.intakePID.setTarget(1050);
-            intakeSubsystem.intakePID.setGravityMode(true, -1);
+            intakeSubsystem.intakePID.setTarget(-975);
+            intakeSubsystem.intakePID.setGravityMode(true, 1);
         } else{
-            intakeSubsystem.intakePID.setTarget(50);
-            intakeSubsystem.intakePID.setGravityMode(false, -1);
+            intakeSubsystem.intakePID.setTarget(-50);
+            intakeSubsystem.intakePID.setGravityMode(false, 1);
         }
 
             pidOutput = intakeSubsystem.intakePID.getMotorPower();
@@ -70,7 +70,7 @@ public class IntakeCommand extends Command {
                 outBallSubsystem.set(0.4);
                 intakeSubsystem.setConveyorPower(-1);
             }*/
-            outBallSubsystem.set(0.4);
+            outBallSubsystem.set(0.6);
             intakeSubsystem.setIntakePower(1);
             intakeSubsystem.setConveyorPower(-1);
             //isDelay = true;
@@ -89,8 +89,13 @@ public class IntakeCommand extends Command {
                 isDelay = false;
             }*/
             intakeSubsystem.setIntakePower(0);
-            intakeSubsystem.setConveyorPower(-OI.manipController.getRightTrigger());
-            outBallSubsystem.set(OI.manipController.getLeftTrigger());
+            intakeSubsystem.setConveyorPower(0);
+            //outBallSubsystem.set(OI.manipController.getRightTrigger());
+            if(OI.manipController.rightTrigger.get()){
+                outBallSubsystem.set(0.5);
+            } else{
+                outBallSubsystem.set(0);
+            }
             outTakeTimer = 0;
         }
 

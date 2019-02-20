@@ -21,17 +21,17 @@ public class PanelCommand extends Command {
     @Override
     public void onLoop() {
         //panelSubsystem.hatchPID.logVerbose();
-        System.out.println("Encoder: " + panelSubsystem.hatchEncoder.getCurrentPosition());
+        //System.out.println("Encoder: " + panelSubsystem.hatchEncoder.getCurrentPosition());
 
         if (OI.manipController.y.get()) {
             panelSubsystem.hatchPID.setTarget(50); //110
         } else if (OI.manipController.b.get()) {
-            panelSubsystem.hatchPID.setTarget(1350); //1650
+            panelSubsystem.hatchPID.setTarget(1550); //1650
         } else if(OI.manipController.x.get()){
-            panelSubsystem.hatchPID.setTarget(1500);
+            panelSubsystem.hatchPID.setTarget(1000);
         } else if (OI.driveController.getDPad().isUp()){
-            panelSubsystem.hatchPID.setTarget(50);
-        }
+            panelSubsystem.hatchPID.setTarget(50); //negative for main robot
+        } //out ball at 1000 clicks
 
         if (!OI.manipController.rightBumper.get()) {
             double pow = panelSubsystem.hatchPID.getMotorPower();
@@ -40,14 +40,14 @@ public class PanelCommand extends Command {
         } else {
 
             double pow = Utils.deadzone(OI.manipController.getY(), 0.1);
-            //pow *= 0.5;
-            //System.out.println("Pow: " + pow);
+            pow *= 0.5;
+            System.out.println("Pow: " + pow);
             panelSubsystem.setHatchArm(pow);
         }
 
         if(OI.manipController.leftTrigger.get()){
             panelSubsystem.setOuttake(true);
-            panelSubsystem.hatchPID.setTarget(1400);
+            panelSubsystem.hatchPID.setTarget(1550);
         } else{
             panelSubsystem.setOuttake(false);
         }

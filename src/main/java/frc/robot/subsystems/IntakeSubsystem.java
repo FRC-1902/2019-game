@@ -37,11 +37,11 @@ public class IntakeSubsystem extends Subsystem {
         conveyor = new Victor(RobotMap.CONVEYOR);
         intakeArm.setNeutralMode(NeutralMode.Brake);
         intakeArm.setSensorPhase(true);
-        intakeEncoder = new CanEncoder(RobotMap.HATCH_ARM);
+        intakeEncoder = new CanEncoder(intakeArm); //switched on practice robot
         distance = new RevColorDistance();
         intakeEncoder.reset();
 
-        intakePID = new PIDController(null, intakeEncoder, 0.001, 0.00005, 0); //0.0005 i:00001
+        intakePID = new PIDController(null, intakeEncoder, 0.001, 0.00002, 0); //0.0005 i:00001
         //intakePID.setGravityMode(true, -1);
     }
 

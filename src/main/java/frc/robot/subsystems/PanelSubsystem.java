@@ -25,7 +25,7 @@ public class PanelSubsystem extends Subsystem {
         hatchArm = new TalonSRX(RobotMap.HATCH_ARM);
         hatchArm.setNeutralMode(NeutralMode.Brake);
         hatchArm.setSensorPhase(true);
-        hatchEncoder = new CanEncoder(RobotMap.INTAKE_ARM);
+        hatchEncoder = new CanEncoder(hatchArm); //switched on practice robot
         hatchEncoder.reset();
 
         hatchPID = new PIDController(null, hatchEncoder, 0.001, 0, 0); //0.0003 to 0.000165
