@@ -1,21 +1,9 @@
 package frc.robot.vision;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.explodingbacon.bcnlib.vision.Contour;
 import com.explodingbacon.bcnlib.vision.Rectangle;
 import org.opencv.core.*;
-import org.opencv.core.Core.*;
-import org.opencv.features2d.FeatureDetector;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.*;
-import org.opencv.objdetect.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
@@ -274,5 +262,33 @@ public class CVVisionPipeline {
             return center - avg;
         }
         return 0;
+    }
+
+    private class RotatedRectPoints{
+        public RotatedRect inst;
+        public boolean isTall;
+        public Point[] points = new Point[4], corners = new Point[4];
+
+        //0 is centermost point, then highest point, etc
+        public RotatedRectPoints(RotatedRect rect) {
+            this.inst = rect;
+            isTall = (inst.size.height > inst.size.width);
+            inst.points(points);
+            if (isTall) {
+                corners[0] = points[1];
+                corners[1] = points[2];
+                corners[2] = points[3];
+                corners[3] = points[0];
+            } else {
+                corners[0] = points[3];
+                corners[1] = points[2];
+                corners[2] = points[1];
+                corners[3] = points[0];
+            }
+        }
+
+        public Point getCorner(int corner) {
+            return corners[corner];
+        }
     }
 }
