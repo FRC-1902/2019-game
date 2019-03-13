@@ -1,16 +1,19 @@
 package frc.robot.vision;
 
-import com.explodingbacon.bcnlib.vision.Contour;
-import com.explodingbacon.bcnlib.vision.Rectangle;
 import org.opencv.core.*;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
 
 /**
  * ExamplePipeline class.
@@ -289,6 +292,344 @@ public class CVVisionPipeline {
 
         public Point getCorner(int corner) {
             return corners[corner];
+        }
+    }
+
+
+
+    private class Rectangle {
+        public final int x;
+        public final int y;
+        public final int width;
+        public final int height;
+
+        public Rectangle(int x, int y, int width, int height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+
+        public Rectangle(double x, double y, double width, double height) {
+            this.x = round(x);
+            this.y = round(y);
+            this.width = round(width);
+            this.height = round(height);
+        }
+
+        public int round(double d) {
+            return (int)Math.round(d);
+        }
+
+        public Rect toRect() {
+            return new Rect(this.x, this.y, this.width, this.height);
+        }
+    }
+
+    private abstract class BCNScalar {
+        private int v1;
+        private int v2;
+        private int v3;
+
+        protected BCNScalar(int v1, int v2, int v3) {
+            this.v1 = v1;
+            this.v2 = v2;
+            this.v3 = v3;
+        }
+
+        public Scalar toScalar() {
+            return new Scalar((double)this.v1, (double)this.v2, (double)this.v3);
+        }
+    }
+
+    public class Color extends BCNScalar {
+        public final Color BLACK = new Color(0, 0, 0);
+        public final Color WHITE = new Color(255, 255, 255);
+        public final Color RED = new Color(255, 0, 0);
+        public final Color GREEN = new Color(0, 255, 0);
+        public final Color BLUE = new Color(0, 0, 255);
+        public final Color PURPLE = new Color(128, 0, 255);
+        public final Color ORANGE = new Color(255, 128, 0);
+        public final Color TEAL = new Color(0, 255, 255);
+        public final Color YELLOW = new Color(255, 255, 0);
+        private int red;
+        private int green;
+        private int blue;
+
+        public Color(int r, int g, int b) {
+            super(b, g, r);
+            this.red = r;
+            this.green = g;
+            this.blue = b;
+        }
+
+        public int getRed() {
+            return this.red;
+        }
+
+        public int getGreen() {
+            return this.green;
+        }
+
+        public int getBlue() {
+            return this.blue;
+        }
+    }
+
+    private class Image {
+        protected Mat m;
+
+        public Image() {
+            this.m = new Mat();
+        }
+
+        public Image(Mat m) {
+            this.m = m;
+        }
+
+        public double getWidth() {
+            return (double)this.m.width();
+        }
+
+        public double getHeight() {
+            return (double)this.m.height();
+        }
+
+        public List<Contour> getContours() {
+            List<Contour> result = new ArrayList();
+            List<MatOfPoint> contours = new ArrayList();
+            com.explodingbacon.bcnlib.vision.Image copy = this.copy();
+            Imgproc.findContours(copy.getMat(), contours, new Mat(), 0, 2);
+            Iterator var4 = contours.iterator();
+
+            while(var4.hasNext()) {
+                MatOfPoint mop = (MatOfPoint)var4.next();
+                result.add(new Contour(mop));
+            }
+
+            copy.release();
+            return result;
+        }
+
+        public List<com.explodingbacon.bcnlib.vision.Rectangle> getFaces() {
+            CascadeClassifier faceDetector = new CascadeClassifier(this.getClass().getResource("/lbpcascade_frontalface.xml").getPath());
+            MatOfRect faceDetections = new MatOfRect();
+            faceDetector.detectMultiScale(this.m, faceDetections);
+            List<com.explodingbacon.bcnlib.vision.Rectangle> faces = new ArrayList();
+            Rect[] var4 = faceDetections.toArray();
+            int var5 = var4.length;
+
+            for(int var6 = 0; var6 < var5; ++var6) {
+                Rect r = var4[var6];
+                faces.add(new com.explodingbacon.bcnlib.vision.Rectangle(r.x, r.y, r.width, r.height));
+            }
+
+            return faces;
+        }
+
+        public Image inRange(BCNScalar low, BCNScalar high) {
+            Core.inRange(this.m, low.toScalar(), high.toScalar(), this.m);
+            return this;
+        }
+
+        public void toHSV() {
+            Imgproc.cvtColor(this.m, this.m, 40);
+        }
+
+        public com.explodingbacon.bcnlib.vision.Image copy() {
+            com.explodingbacon.bcnlib.vision.Image i = new com.explodingbacon.bcnlib.vision.Image();
+            this.m.copyTo(i.getMat());
+            return i;
+        }
+
+        public void drawLine(int x, int y, int height, Color c) {
+            this.drawRectangle(x, y, x, y + height, c);
+        }
+
+        public void drawLine(int x, int height, Color c) {
+            this.drawLine(x, 0, height, c);
+        }
+
+        public void drawLine(int x, Color c) {
+            this.drawLine(x, 479, c);
+        }
+
+        public void drawRectangle(com.explodingbacon.bcnlib.vision.Rectangle r, Color c) {
+            this.drawRectangle(r.x, r.y, r.x + r.width, r.y + r.height, c);
+        }
+
+        public void drawRectangle(int x, int y, int x2, int y2, Color c) {
+            Imgproc.rectangle(this.m, new Point((double)x, (double)y), new Point((double)x2, (double)y2), c.toScalar());
+        }
+
+        public void drawCircle(int x, int y, int radius, Color c) {
+            Imgproc.circle(this.m, new Point((double)x, (double)y), radius, c.toScalar());
+        }
+
+        public void drawContours(List<Contour> con, Color c) {
+            //Imgproc.drawContours(this.m, Contour.toMatOfPoint(con), -1, c.toScalar());
+        }
+
+        public void drawArrow(double x, double y, double x2, double y2, Color c) {
+            Imgproc.arrowedLine(this.m, new Point(x, y), new Point(x2, y2), c.toScalar());
+        }
+
+        public void drawText(String text, int x, int y, double scale, Color color) {
+            int fontFace = 0;
+            Imgproc.putText(this.m, text, new Point((double)x, (double)y), fontFace, scale, color.toScalar());
+        }
+
+        public double compareTo(com.explodingbacon.bcnlib.vision.Image i) {
+            return Imgproc.matchShapes(this.m, i.getMat(), 1, 0.0D);
+        }
+
+        public com.explodingbacon.bcnlib.vision.Image resize(int width, int height) {
+            com.explodingbacon.bcnlib.vision.Image resize = new com.explodingbacon.bcnlib.vision.Image();
+            Size sz = new Size((double)width, (double)height);
+            Imgproc.resize(this.m, resize.getMat(), sz);
+            return resize;
+        }
+
+        public byte[] toBytes() {
+            return new byte[this.m.rows() * this.m.cols() * this.m.channels()];
+        }
+
+        public void saveAs(String fileName) {
+            File f = new File(fileName);
+            if (f.exists()) {
+                f.delete();
+            }
+
+            Imgcodecs.imwrite(fileName, this.m);
+        }
+
+        public void release() {
+            this.m.release();
+        }
+
+        public Mat getMat() {
+            return this.m;
+        }
+
+        public void setMat(Mat newMat) {
+            this.m = newMat;
+        }
+
+        public Image fromFile(String fileName) {
+            return new Image(Imgcodecs.imread(fileName));
+        }
+    }
+
+    public class Contour extends Image {
+        public Point coords = null;
+        public MatOfPoint mop = null;
+        public MatOfPoint2f mop2f = null;
+        protected Rectangle rect;
+        public RotatedRect rotatedRect;
+
+        public Contour(MatOfPoint mop) {
+            super(mop);
+            this.mop = mop;
+            this.init();
+        }
+
+        public Contour(MatOfPoint2f mop2f) {
+            super(mop2f);
+            this.mop = (MatOfPoint)this.getMat();
+            this.mop2f = mop2f;
+            this.init();
+        }
+
+        public MatOfPoint toMOP(MatOfPoint2f mop2f) {
+            MatOfPoint mop = new MatOfPoint();
+            mop2f.convertTo(mop, 4);
+            return mop;
+        }
+
+        public MatOfPoint2f toMOP2f(MatOfPoint mop) {
+            MatOfPoint2f mop2f = new MatOfPoint2f();
+            mop.convertTo(mop2f, CvType.CV_32FC2);
+            return mop2f;
+        }
+
+        private void init() {
+            this.rotatedRect = Imgproc.minAreaRect(this.getMatOfPoint2f());
+            Rect r = this.rotatedRect.boundingRect();
+            Point tl = r.tl();
+            Point br = r.br();
+            this.coords = tl;
+            this.rect = new Rectangle(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+        }
+
+        public double getArea() {
+            return (double)(this.rect.width * this.rect.height);
+        }
+
+        public Rectangle getBoundingBox() {
+            return this.rect;
+        }
+
+        public double getX() {
+            return this.coords.x;
+        }
+
+        public double getY() {
+            return this.coords.y;
+        }
+
+        public double getWidth() {
+            return (double)this.rect.width;
+        }
+
+        public double getHeight() {
+            return (double)this.rect.height;
+        }
+
+        public double getMiddleX() {
+            return this.getX() + this.getWidth() / 2.0D;
+        }
+
+        public double getMiddleY() {
+            return this.getY() + this.getHeight() / 2.0D;
+        }
+
+        public boolean isConvex() {
+            return Imgproc.isContourConvex(this.getMatOfPoint());
+        }
+
+        public MatOfPoint getMatOfPoint() {
+            if (this.mop == null) {
+                this.mop = toMOP(this.mop2f);
+            }
+
+            return this.mop;
+        }
+
+        public MatOfPoint2f getMatOfPoint2f() {
+            if (this.mop2f == null) {
+                this.mop2f = toMOP2f(this.mop);
+            }
+
+            return this.mop2f;
+        }
+
+        public Contour approxEdges(double precision) {
+            double epsilon = precision * Imgproc.arcLength(this.getMatOfPoint2f(), true);
+            MatOfPoint2f r = new MatOfPoint2f();
+            Imgproc.approxPolyDP(this.getMatOfPoint2f(), r, epsilon, true);
+            return new Contour(r);
+        }
+
+        public List<MatOfPoint> toMatOfPoint(List<Contour> cons) {
+            List<MatOfPoint> mops = new ArrayList();
+            Iterator var2 = cons.iterator();
+
+            while(var2.hasNext()) {
+                Contour c = (Contour)var2.next();
+                mops.add((MatOfPoint)c.getMat());
+            }
+
+            return mops;
         }
     }
 }
