@@ -36,7 +36,7 @@ public class IntakeCommand extends Command {
     public void onLoop() {
 
         //intakeSubsystem.setArmPower(OI.manipController.getY() * 0.5);
-        System.out.println("Encoder: " + intakeSubsystem.intakeEncoder.getCurrentPosition() + " PID: " + intakeSubsystem.intakePID.getMotorPower() + " Arm Power: " + intakeSubsystem.intakeArm.getMotorOutputPercent());
+        //System.out.println("Encoder: " + intakeSubsystem.intakeEncoder.getCurrentPosition() + " PID: " + intakeSubsystem.intakePID.getMotorPower() + " Arm Power: " + intakeSubsystem.intakeArm.getMotorOutputPercent());
         //intakeSubsystem.intakePID.logVerbose();
 
         if(OI.manipController.getDPad().isDown()){
@@ -92,11 +92,16 @@ public class IntakeCommand extends Command {
             intakeSubsystem.setConveyorPower(0);
             //outBallSubsystem.set(OI.manipController.getRightTrigger());
             if(OI.manipController.rightTrigger.get()){
-                outBallSubsystem.set(0.5);
+                outBallSubsystem.set(0.55);
             } else{
-                outBallSubsystem.set(0);
+                outBallSubsystem.set(-OI.manipController.getY2());
             }
             outTakeTimer = 0;
+        }
+
+        if(OI.manipController.getDPad().isUp()){
+            outBallSubsystem.set(-1);
+            intakeSubsystem.setConveyorPower(1);
         }
 
         //System.out.println("Upper: " + Byte.toUnsignedInt(dist.get(1)) + " Lower: " + Byte.toUnsignedInt(dist.get(0)) + " Distance: " + dInt);
@@ -110,6 +115,6 @@ public class IntakeCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return !Robot.self.isEnabled();
     }
 }

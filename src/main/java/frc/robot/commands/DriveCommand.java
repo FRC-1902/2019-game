@@ -88,11 +88,11 @@ public class DriveCommand extends Command {
             }*/
             driveSubsystem.arcadeDrive(0,0);
             autoLock.run();
-        } else if(OI.driveController.getDPad().isUp()){
+        } else if(OI.driveController.leftBumper.get()){
             driveSubsystem.arcadeDrive(0,-0.5);
         } else {
             driveSubsystem.arcadeDrive(x, y);
-            //System.out.println("Heading: " + driveSubsystem.getHeading());
+            System.out.println("Heading: " + driveSubsystem.getHeading());
         }
 
 
@@ -105,7 +105,7 @@ public class DriveCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return !robot.isEnabled();
+        return !Robot.self.isEnabled();
     }
 
     Runnable autoLock = new Runnable() {

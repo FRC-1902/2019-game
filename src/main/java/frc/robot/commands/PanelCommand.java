@@ -9,7 +9,7 @@ import frc.robot.Robot;
 import static frc.robot.Robot.panelSubsystem;
 
 public class PanelCommand extends Command {
-
+    boolean hasReZeroed = false;
     @Override
     public void onInit() {
         panelSubsystem.hatchPID.setTarget(panelSubsystem.hatchEncoder.getCurrentPosition());
@@ -21,17 +21,26 @@ public class PanelCommand extends Command {
     @Override
     public void onLoop() {
         //panelSubsystem.hatchPID.logVerbose();
-        //System.out.println("Encoder: " + panelSubsystem.hatchEncoder.getCurrentPosition());
+        System.out.println("Encoder: " + panelSubsystem.hatchEncoder.getCurrentPosition());
 
         if (OI.manipController.y.get()) {
-            panelSubsystem.hatchPID.setTarget(50); //110
+            panelSubsystem.hatchPID.setTarget((50) + (hasReZeroed ? 130 : 0)); //110
         } else if (OI.manipController.b.get()) {
-            panelSubsystem.hatchPID.setTarget(1550); //1650
+            panelSubsystem.hatchPID.setTarget((Robot.OutBall ? 1300 : 1450) + + (hasReZeroed ? 130 : 0)); //1650 outball: 1300
         } else if(OI.manipController.x.get()){
-            panelSubsystem.hatchPID.setTarget(1000);
-        } else if (OI.driveController.getDPad().isUp()){
-            panelSubsystem.hatchPID.setTarget(50); //negative for main robot
-        } //out ball at 1000 clicks
+            panelSubsystem.hatchPID.setTarget((Robot.OutBall ? 745 : 950) + (hasReZeroed ? 130 : 0)); //outball: 745
+        } else if (OI.driveController.leftBumper.get()){
+            panelSubsystem.hatchPID.setTarget(50 + (hasReZeroed ? 130 : 0)); //negative for main robot
+        } else {
+           if(Robot.OutBall && panelSubsystem.hatchPID.getTarget() == 1500){
+               panelSubsystem.hatchPID.setTarget(1650 + (hasReZeroed ? 130 : 0));
+           } else if(!Robot.OutBall && panelSubsystem.hatchPID.getTarget() == 1500){
+               panelSubsystem.hatchPID.setTarget(1550 + (hasReZeroed ? 130 : 0));
+           }
+           /*if(OI.manipController.a.get()){
+               panelSubsystem.hatchPID.setTarget(1650);
+           }*/
+        }  //out ball at 1000 clicks
 
         if (!OI.manipController.rightBumper.get()) {
             double pow = panelSubsystem.hatchPID.getMotorPower();
@@ -43,11 +52,15 @@ public class PanelCommand extends Command {
             pow *= 0.5;
             System.out.println("Pow: " + pow);
             panelSubsystem.setHatchArm(pow);
+            if(OI.manipController.leftJoyButton.get()){
+                panelSubsystem.hatchEncoder.reset();
+                hasReZeroed = true;
+            }
         }
 
         if(OI.manipController.leftTrigger.get()){
             panelSubsystem.setOuttake(true);
-            panelSubsystem.hatchPID.setTarget(1550);
+            panelSubsystem.hatchPID.setTarget(Robot.OutBall ? 1500 : 1500); //outball: 1300
         } else{
             panelSubsystem.setOuttake(false);
         }
@@ -60,6 +73,6 @@ public class PanelCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return !Robot.self.isEnabled();
     }
 }

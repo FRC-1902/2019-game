@@ -42,7 +42,7 @@ public class VisionThread implements Runnable {
         camera.setFPS(5); //60
         camera.setResolution(854, 480);
         camera.setExposureHoldCurrent();
-        camera.setExposureManual(20);
+        camera.setExposureManual(50); //10
 
         //d: 45.5
         //w: 43
@@ -50,7 +50,7 @@ public class VisionThread implements Runnable {
         //horizontal angle = 51 deg
 
         CvSink cvSink = CameraServer.getInstance().getVideo();
-        CvSource outputStream = CameraServer.getInstance().putVideo("Vision", 854, 480);
+        //CvSource outputStream = CameraServer.getInstance().putVideo("Vision", 854, 480);
 
         Image source = new Image();
         Image output = null;
@@ -233,7 +233,7 @@ public class VisionThread implements Runnable {
                     }
 
 
-                    outputStream.putFrame(output.getMat());
+                    //utputStream.putFrame(output.getMat());
                     output.release();
 
                     for (Contour co : contours) {

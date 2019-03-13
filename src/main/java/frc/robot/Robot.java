@@ -16,6 +16,8 @@
 */
 package frc.robot;
 
+import com.explodingbacon.bcnlib.framework.Log;
+import com.explodingbacon.bcnlib.utils.Utils;
 import com.explodingbacon.bcnlib.vision.Vision;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
@@ -42,6 +44,7 @@ public class Robot extends TimedRobot {
     UsbCamera camera;
     MjpegServer server;
     public static boolean OutBall = false;
+    public static Robot self;
 
     //Solenoid s;
 
@@ -75,10 +78,12 @@ public class Robot extends TimedRobot {
         outBallSubsystem = new OutBallSubsystem();
 
 
-        Vision.init();
+        /*Vision.init();
         vision = new VisionThread();
 
-        vision.start();
+        vision.start();*/
+
+        self = this;
     }
 
  /**
@@ -100,21 +105,44 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
+        Log.d("Intake Encoder: " + intakeSubsystem.intakeEncoder.getCurrentPosition());
     }
 
     @Override
     public void autonomousInit() {
-
+        OI.runCommand(new PanelCommand());
+        OI.runCommand(new DriveCommand(this,vision));
+        //OI.runCommand(new LiftCommand(this));
+        OI.runCommand(new IntakeCommand(this));
+        //OI.runCommand(new OutBallCommand(this));
     }
 
     @Override
     public void autonomousPeriodic() {
+        double x = OI.driveController.getX2();
+        double y = OI.driveController.getY();
 
+        y = -y;
+
+        x = Math.pow(Utils.deadzone(x, 0.1), 2) * Utils.sign(x);
+        y = Math.pow(Utils.deadzone(y, 0.1), 2) * Utils.sign(y);
+
+        driveSubsystem.left.set(y+x);
+        driveSubsystem.right.set(y-x);
     }
 
     @Override
     public void teleopPeriodic() {
+        double x = OI.driveController.getX2();
+        double y = OI.driveController.getY();
 
+        y = -y;
+
+        x = Math.pow(Utils.deadzone(x, 0.1), 2) * Utils.sign(x);
+        y = Math.pow(Utils.deadzone(y, 0.1), 2) * Utils.sign(y);
+
+        driveSubsystem.left.set(y+x);
+        driveSubsystem.right.set(y-x);
     }
 
     @Override
@@ -130,8 +158,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        OI.deleteAllTriggers();
      OI.runCommand(new PanelCommand());
-     OI.runCommand(new DriveCommand(this,vision));
+     OI.runCommand(new DriveCommand(this));
         //OI.runCommand(new LiftCommand(this));
         OI.runCommand(new IntakeCommand(this));
         //OI.runCommand(new OutBallCommand(this));

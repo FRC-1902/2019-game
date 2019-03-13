@@ -41,8 +41,10 @@ public class DriveSubsystem extends Subsystem {
     }
 
     public void tankDrive(double leftPower, double rightPower) {
+        /*
         left.set(leftPower);
         right.set(rightPower);
+        */
     }
 
     public void arcadeDrive(double x, double y) {
