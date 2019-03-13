@@ -208,6 +208,7 @@ public class CVVisionPipeline {
             // Filter for a pair of targets with angles of rotation roughly matching the goal
             RotatedRect rr1 = goodContours.get(0).rotatedRect;
             double targetAngle = rr1.size.height > rr1.size.width ? 75.5 : 14.5;
+            //goodContours.sort((o1, o2) -> (int)((rr1.center.x - o1.rotatedRect.center.x) - (rr1.center.x - o2.rotatedRect.center.x)));
             RotatedRect current;
             int out = 0;
             for(int i = 1; i < goodContours.size(); i++){
