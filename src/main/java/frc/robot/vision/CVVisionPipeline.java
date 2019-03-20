@@ -1,19 +1,14 @@
 package frc.robot.vision;
 
 import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.RotatedRect;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.objdetect.CascadeClassifier;
 
 /**
  * ExamplePipeline class.
@@ -71,6 +66,7 @@ public class CVVisionPipeline {
 
     /**
      * This method is a generated getter for the output of a HSV_Threshold.
+     *
      * @return Mat output from HSV_Threshold.
      */
     public Mat hsvThresholdOutput() {
@@ -79,6 +75,7 @@ public class CVVisionPipeline {
 
     /**
      * This method is a generated getter for the output of a Find_Contours.
+     *
      * @return ArrayList<MatOfPoint> output from Find_Contours.
      */
     public ArrayList<MatOfPoint> findContoursOutput() {
@@ -87,6 +84,7 @@ public class CVVisionPipeline {
 
     /**
      * This method is a generated getter for the output of a Filter_Contours.
+     *
      * @return ArrayList<MatOfPoint> output from Filter_Contours.
      */
     public ArrayList<MatOfPoint> filterContoursOutput() {
@@ -98,10 +96,10 @@ public class CVVisionPipeline {
      * Segment an image based on hue, saturation, and value ranges.
      *
      * @param input The image on which to perform the HSL threshold.
-     * @param hue The min and max hue
-     * @param sat The min and max saturation
-     * @param val The min and max value
-     * @param out The image in which to store the output.
+     * @param hue   The min and max hue
+     * @param sat   The min and max saturation
+     * @param val   The min and max value
+     * @param out   The image in which to store the output.
      */
     private void hsvThreshold(Mat input, double[] hue, double[] sat, double[] val,
                               Mat out) {
@@ -112,7 +110,8 @@ public class CVVisionPipeline {
 
     /**
      * Sets the values of pixels in a binary image to their distance to the nearest black pixel.
-     * @param input The image on which to perform the Distance Transform.
+     *
+     * @param input        The image on which to perform the Distance Transform.
      * @param externalOnly The Transform.
      */
     private void findContours(Mat input, boolean externalOnly,
@@ -122,8 +121,7 @@ public class CVVisionPipeline {
         int mode;
         if (externalOnly) {
             mode = Imgproc.RETR_EXTERNAL;
-        }
-        else {
+        } else {
             mode = Imgproc.RETR_LIST;
         }
         int method = Imgproc.CHAIN_APPROX_SIMPLE;
@@ -133,18 +131,19 @@ public class CVVisionPipeline {
 
     /**
      * Filters out contours that do not meet certain criteria.
-     * @param inputContours is the input list of contours
-     * @param output is the the output list of contours
-     * @param minArea is the minimum area of a contour that will be kept
-     * @param minPerimeter is the minimum perimeter of a contour that will be kept
-     * @param minWidth minimum width of a contour
-     * @param maxWidth maximum width
-     * @param minHeight minimum height
-     * @param maxHeight maximimum height
+     *
+     * @param inputContours  is the input list of contours
+     * @param output         is the the output list of contours
+     * @param minArea        is the minimum area of a contour that will be kept
+     * @param minPerimeter   is the minimum perimeter of a contour that will be kept
+     * @param minWidth       minimum width of a contour
+     * @param maxWidth       maximum width
+     * @param minHeight      minimum height
+     * @param maxHeight      maximimum height
      * @param minVertexCount minimum vertex Count of the contours
      * @param maxVertexCount maximum vertex Count
-     * @param minRatio minimum ratio of width to height
-     * @param maxRatio maximum ratio of width to height
+     * @param minRatio       minimum ratio of width to height
+     * @param maxRatio       maximum ratio of width to height
      */
     private void filterContours(List<MatOfPoint> inputContours, double minArea,
                                 double minPerimeter, double minWidth, double maxWidth, double minHeight, double
@@ -165,20 +164,20 @@ public class CVVisionPipeline {
             MatOfPoint mopHull = new MatOfPoint();
             mopHull.create((int) hull.size().height, 1, CvType.CV_32SC2);
             for (int j = 0; j < hull.size().height; j++) {
-                int index = (int)hull.get(j, 0)[0];
-                double[] point = new double[] { contour.get(index, 0)[0], contour.get(index, 0)[1]};
+                int index = (int) hull.get(j, 0)[0];
+                double[] point = new double[]{contour.get(index, 0)[0], contour.get(index, 0)[1]};
                 mopHull.put(j, 0, point);
             }
             final double solid = 100 * area / Imgproc.contourArea(mopHull);
             if (solid < solidity[0] || solid > solidity[1]) continue;
-            if (contour.rows() < minVertexCount || contour.rows() > maxVertexCount)	continue;
-            final double ratio = bb.width / (double)bb.height;
+            if (contour.rows() < minVertexCount || contour.rows() > maxVertexCount) continue;
+            final double ratio = bb.width / (double) bb.height;
             if (ratio < minRatio || ratio > maxRatio) continue;
             output.add(contour);
         }
     }
 
-    private ArrayList<Contour> identifyContours(List<MatOfPoint> inputContours){
+    private ArrayList<Contour> identifyContours(List<MatOfPoint> inputContours) {
         RotatedRect temp;
         ArrayList<Contour> goodContours = new ArrayList<>();
         for (MatOfPoint m : inputContours) {
@@ -187,38 +186,38 @@ public class CVVisionPipeline {
                 boolean tall;
                 temp = c.rotatedRect;
                 double ratio = temp.size.height / temp.size.width;
-                if(ratio < 1) {
+                if (ratio < 1) {
                     ratio = 1 / ratio;
                     tall = false;
                 } else tall = true;
-                if(ratio > 1.5){
-                    if(tall && Math.abs(Math.abs(temp.angle) - 14.5) < 22.5){
+                if (ratio > 1.5) {
+                    if (tall && Math.abs(Math.abs(temp.angle) - 14.5) < 22.5) {
                         goodContours.add(c);
-                    } else if(!tall && Math.abs(Math.abs(temp.angle) - 75.5) < 22.5){
+                    } else if (!tall && Math.abs(Math.abs(temp.angle) - 75.5) < 22.5) {
                         goodContours.add(c);
                     }
                 }
             }
         }
 
-        goodContours.sort((o1, o2) -> (int)(o2.getArea() - o1.getArea()));
+        goodContours.sort((o1, o2) -> (int) (o2.getArea() - o1.getArea()));
         ArrayList<Contour> finalContours = new ArrayList<>();
 
-        if(goodContours.size() > 2){
+        if (goodContours.size() > 2) {
             // Filter for a pair of targets with angles of rotation roughly matching the goal
             RotatedRect rr1 = goodContours.get(0).rotatedRect;
             double targetAngle = rr1.size.height > rr1.size.width ? 75.5 : 14.5;
             //goodContours.sort((o1, o2) -> (int)((rr1.center.x - o1.rotatedRect.center.x) - (rr1.center.x - o2.rotatedRect.center.x)));
             RotatedRect current;
             int out = 0;
-            for(int i = 1; i < goodContours.size(); i++){
+            for (int i = 1; i < goodContours.size(); i++) {
                 current = goodContours.get(i).rotatedRect;
-                if(Math.abs(Math.abs(current.angle) - targetAngle) < 22.5){
-                    if(rr1.size.height > rr1.size.width && current.center.x < rr1.center.x){
+                if (Math.abs(Math.abs(current.angle) - targetAngle) < 22.5) {
+                    if (rr1.size.height > rr1.size.width && current.center.x < rr1.center.x) {
                         out = i;
                         //System.out.println("Found tall");
                         break;
-                    } else if(rr1.size.height < rr1.size.width && current.center.x > rr1.center.x){
+                    } else if (rr1.size.height < rr1.size.width && current.center.x > rr1.center.x) {
                         out = i;
                         //System.out.println("Found short");
                         break;
@@ -227,28 +226,28 @@ public class CVVisionPipeline {
             }
             finalContours.add(goodContours.get(0));
             finalContours.add(goodContours.get(out));
-        } else if(goodContours.size() == 2){
+        } else if (goodContours.size() == 2) {
             // If there is only two targets, assume they're the correct two targets. jk dont
             RotatedRect rr1 = goodContours.get(0).rotatedRect;
             RotatedRect current = goodContours.get(1).rotatedRect;
 
-            if(rr1.size.height > rr1.size.width && current.center.x < rr1.center.x){
+            if (rr1.size.height > rr1.size.width && current.center.x < rr1.center.x) {
                 finalContours = goodContours;
-            } else if(rr1.size.height < rr1.size.width && current.center.x > rr1.center.x){
+            } else if (rr1.size.height < rr1.size.width && current.center.x > rr1.center.x) {
                 finalContours = goodContours;
             }
         } else {
             //Log.e("Less than 2 potential vision targets seen");
         }
 
-        if(finalContours.size() == 2){
+        if (finalContours.size() == 2) {
             return finalContours;
         }
         return null;
     }
 
-    private double getCenterOffset(ArrayList<Contour> contours, int center){
-        if(contours.size() == 2){
+    private double getCenterOffset(ArrayList<Contour> contours, int center) {
+        if (contours.size() == 2) {
             Contour c1 = contours.get(0);
             Contour c2 = contours.get(1);
 
@@ -262,13 +261,13 @@ public class CVVisionPipeline {
             RotatedRectPoints rr1 = new RotatedRectPoints(c1.rotatedRect);
             RotatedRectPoints rr2 = new RotatedRectPoints(c2.rotatedRect);
 
-            double avg = (rr1.inst.center.x + rr2.inst.center.x)/2;
+            double avg = (rr1.inst.center.x + rr2.inst.center.x) / 2;
             return center - avg;
         }
         return 0;
     }
 
-    private class RotatedRectPoints{
+    private class RotatedRectPoints {
         public RotatedRect inst;
         public boolean isTall;
         public Point[] points = new Point[4], corners = new Point[4];
@@ -297,7 +296,6 @@ public class CVVisionPipeline {
     }
 
 
-
     private class Rectangle {
         public final int x;
         public final int y;
@@ -319,7 +317,7 @@ public class CVVisionPipeline {
         }
 
         public int round(double d) {
-            return (int)Math.round(d);
+            return (int) Math.round(d);
         }
 
         public Rect toRect() {
@@ -339,7 +337,7 @@ public class CVVisionPipeline {
         }
 
         public Scalar toScalar() {
-            return new Scalar((double)this.v1, (double)this.v2, (double)this.v3);
+            return new Scalar((double) this.v1, (double) this.v2, (double) this.v3);
         }
     }
 
@@ -389,11 +387,11 @@ public class CVVisionPipeline {
         }
 
         public double getWidth() {
-            return (double)this.m.width();
+            return (double) this.m.width();
         }
 
         public double getHeight() {
-            return (double)this.m.height();
+            return (double) this.m.height();
         }
 
         public List<Contour> getContours() {
@@ -403,8 +401,8 @@ public class CVVisionPipeline {
             Imgproc.findContours(copy.getMat(), contours, new Mat(), 0, 2);
             Iterator var4 = contours.iterator();
 
-            while(var4.hasNext()) {
-                MatOfPoint mop = (MatOfPoint)var4.next();
+            while (var4.hasNext()) {
+                MatOfPoint mop = (MatOfPoint) var4.next();
                 result.add(new Contour(mop));
             }
 
@@ -420,7 +418,7 @@ public class CVVisionPipeline {
             Rect[] var4 = faceDetections.toArray();
             int var5 = var4.length;
 
-            for(int var6 = 0; var6 < var5; ++var6) {
+            for (int var6 = 0; var6 < var5; ++var6) {
                 Rect r = var4[var6];
                 faces.add(new com.explodingbacon.bcnlib.vision.Rectangle(r.x, r.y, r.width, r.height));
             }
@@ -460,11 +458,11 @@ public class CVVisionPipeline {
         }
 
         public void drawRectangle(int x, int y, int x2, int y2, Color c) {
-            Imgproc.rectangle(this.m, new Point((double)x, (double)y), new Point((double)x2, (double)y2), c.toScalar());
+            Imgproc.rectangle(this.m, new Point((double) x, (double) y), new Point((double) x2, (double) y2), c.toScalar());
         }
 
         public void drawCircle(int x, int y, int radius, Color c) {
-            Imgproc.circle(this.m, new Point((double)x, (double)y), radius, c.toScalar());
+            Imgproc.circle(this.m, new Point((double) x, (double) y), radius, c.toScalar());
         }
 
         public void drawContours(List<Contour> con, Color c) {
@@ -477,7 +475,7 @@ public class CVVisionPipeline {
 
         public void drawText(String text, int x, int y, double scale, Color color) {
             int fontFace = 0;
-            Imgproc.putText(this.m, text, new Point((double)x, (double)y), fontFace, scale, color.toScalar());
+            Imgproc.putText(this.m, text, new Point((double) x, (double) y), fontFace, scale, color.toScalar());
         }
 
         public double compareTo(com.explodingbacon.bcnlib.vision.Image i) {
@@ -486,7 +484,7 @@ public class CVVisionPipeline {
 
         public com.explodingbacon.bcnlib.vision.Image resize(int width, int height) {
             com.explodingbacon.bcnlib.vision.Image resize = new com.explodingbacon.bcnlib.vision.Image();
-            Size sz = new Size((double)width, (double)height);
+            Size sz = new Size((double) width, (double) height);
             Imgproc.resize(this.m, resize.getMat(), sz);
             return resize;
         }
@@ -536,7 +534,7 @@ public class CVVisionPipeline {
 
         public Contour(MatOfPoint2f mop2f) {
             super(mop2f);
-            this.mop = (MatOfPoint)this.getMat();
+            this.mop = (MatOfPoint) this.getMat();
             this.mop2f = mop2f;
             this.init();
         }
@@ -563,7 +561,7 @@ public class CVVisionPipeline {
         }
 
         public double getArea() {
-            return (double)(this.rect.width * this.rect.height);
+            return (double) (this.rect.width * this.rect.height);
         }
 
         public Rectangle getBoundingBox() {
@@ -579,11 +577,11 @@ public class CVVisionPipeline {
         }
 
         public double getWidth() {
-            return (double)this.rect.width;
+            return (double) this.rect.width;
         }
 
         public double getHeight() {
-            return (double)this.rect.height;
+            return (double) this.rect.height;
         }
 
         public double getMiddleX() {
@@ -625,9 +623,9 @@ public class CVVisionPipeline {
             List<MatOfPoint> mops = new ArrayList();
             Iterator var2 = cons.iterator();
 
-            while(var2.hasNext()) {
-                Contour c = (Contour)var2.next();
-                mops.add((MatOfPoint)c.getMat());
+            while (var2.hasNext()) {
+                Contour c = (Contour) var2.next();
+                mops.add((MatOfPoint) c.getMat());
             }
 
             return mops;

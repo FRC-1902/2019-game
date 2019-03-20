@@ -7,19 +7,19 @@ public class CanEncoder implements PIDSource {
     int zero = 0;
     TalonSRX talon;
 
-    public CanEncoder(TalonSRX talon){
+    public CanEncoder(TalonSRX talon) {
         this.talon = talon;
     }
 
-    public CanEncoder(int port){
+    public CanEncoder(int port) {
         talon = new TalonSRX(port);
     }
 
-    public int getCurrentPosition(){
+    public int getCurrentPosition() {
         return talon.getSelectedSensorPosition() - zero;
     }
 
-    public int getCurrentVelocity(){
+    public int getCurrentVelocity() {
         return talon.getSelectedSensorVelocity();
     }
 

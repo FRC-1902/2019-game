@@ -8,7 +8,7 @@ import frc.robot.subsystems.OutBallSubsystem;
 public class OutBallCommand extends Command {
     OutBallSubsystem outBallSubsystem;
 
-    public OutBallCommand(Robot robot){
+    public OutBallCommand(Robot robot) {
         outBallSubsystem = robot.outBallSubsystem;
     }
 

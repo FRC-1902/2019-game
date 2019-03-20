@@ -7,11 +7,11 @@ import frc.robot.RobotMap;
 public class OutBallSubsystem extends Subsystem {
     public Victor outMotor;
 
-    public OutBallSubsystem(){
+    public OutBallSubsystem() {
         outMotor = new Victor(RobotMap.OUTTAKE);
     }
 
-    public void set(double pow){
+    public void set(double pow) {
         outMotor.set(pow);
     }
 

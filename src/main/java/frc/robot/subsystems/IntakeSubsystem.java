@@ -1,59 +1,45 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.explodingbacon.bcnlib.framework.PIDController;
-import com.explodingbacon.bcnlib.sensors.AbstractEncoder;
-import com.explodingbacon.bcnlib.sensors.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.CanEncoder;
 import frc.robot.RevColorDistance;
-import frc.robot.Robot;
 import frc.robot.RobotMap;
 
-import java.io.ByteArrayInputStream;
-import java.nio.ByteBuffer;
-
-import static frc.robot.Robot.panelSubsystem;
-
 public class IntakeSubsystem extends Subsystem {
-    public CanEncoder intakeEncoder;
-    public TalonSRX intakeArm;
-    public PIDController intakePID;
+    //public CanEncoder intakeEncoder;
+    //public TalonSRX intakeArm;
+    //public PIDController intakePID;
     public Talon intake;
     public Victor conveyor;
-
+    public Solenoid intakeArm;
     public RevColorDistance distance;
 
     public IntakeSubsystem() {
-        intakeArm = new TalonSRX(RobotMap.INTAKE_ARM);
+        //intakeArm = new TalonSRX(RobotMap.INTAKE_ARM);
+        intakeArm = new Solenoid(RobotMap.INTAKE_SOLENOID);
         intake = new Talon(RobotMap.INTAKE);
         conveyor = new Victor(RobotMap.CONVEYOR);
-        intakeArm.setNeutralMode(NeutralMode.Brake);
-        intakeArm.setSensorPhase(true);
-        intakeEncoder = new CanEncoder(intakeArm); //switched on practice robot
+        //intakeArm.setNeutralMode(NeutralMode.Brake);
+        //intakeArm.setSensorPhase(true);
+        //intakeEncoder = new CanEncoder(intakeArm); //switched on practice robot
         distance = new RevColorDistance();
-        intakeEncoder.reset();
+        //intakeEncoder.reset();
 
-        intakePID = new PIDController(null, intakeEncoder, 0.001, 0.00002, 0); //0.0005 i:00001
+        //intakePID = new PIDController(null, intakeEncoder, 0.001, 0.00002, 0); //0.0005 i:00001
         //intakePID.setGravityMode(true, -1);
     }
 
-    public void setArmPower(double pow) {
+    /*public void setArmPower(double pow) {
         intakeArm.set(ControlMode.PercentOutput, -pow);
-    }
+    }*/
 
     public void setIntakePower(double pow) {
         intake.set(pow);
     }
 
-    public void setConveyorPower(double pow){
+    public void setConveyorPower(double pow) {
         conveyor.set(pow);
     }
 

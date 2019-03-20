@@ -1,13 +1,10 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.explodingbacon.bcnlib.actuators.MotorGroup;
 import com.explodingbacon.bcnlib.sensors.BNOGyro;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.CanEncoder;
 import frc.robot.RobotMap;
 
 public class DriveSubsystem extends Subsystem {
@@ -80,7 +77,7 @@ public class DriveSubsystem extends Subsystem {
         return gyro;
     }
 
-    public int getEncoderReading(){
+    public int getEncoderReading() {
         return -1;
         //return currentEncoder.getCurrentPosition();
     }

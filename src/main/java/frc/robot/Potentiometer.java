@@ -6,15 +6,15 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
 public class Potentiometer implements PIDSource {
     AnalogPotentiometer pot;
 
-    public Potentiometer(AnalogPotentiometer pot){
+    public Potentiometer(AnalogPotentiometer pot) {
         this.pot = pot;
     }
 
-    public Potentiometer(int port){
+    public Potentiometer(int port) {
         this.pot = new AnalogPotentiometer(port);
     }
 
-    public double getCurrentPosition(){
+    public double getCurrentPosition() {
         return pot.get();
     }
 

@@ -18,11 +18,14 @@ package frc.robot;
 
 import com.explodingbacon.bcnlib.framework.Log;
 import com.explodingbacon.bcnlib.utils.Utils;
-import com.explodingbacon.bcnlib.vision.Vision;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.commands.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.DriveCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.LiftCommand;
+import frc.robot.commands.PanelCommand;
 import frc.robot.subsystems.*;
 import frc.robot.vision.VisionThread;
 
@@ -70,11 +73,14 @@ public class Robot extends TimedRobot {
         server.getProperty("compression").set(50);
         */
 
+        SmartDashboard.putNumber("kP", 0d);
+        SmartDashboard.putNumber("kI", 0d);
+        SmartDashboard.putNumber("kD", 0d);
 
         driveSubsystem = new DriveSubsystem();
         panelSubsystem = new PanelSubsystem();
         intakeSubsystem = new IntakeSubsystem();
-        //liftSubsystem = new LiftSubsystem();
+        liftSubsystem = new LiftSubsystem();
         outBallSubsystem = new OutBallSubsystem();
 
 
@@ -86,7 +92,7 @@ public class Robot extends TimedRobot {
         self = this;
     }
 
- /**
+    /**
      * This function is called every robot packet, no matter the mode. Use
      * this for items like diagnostics that you want ran during disabled,
      * autonomous, teleoperated and test.
@@ -96,7 +102,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-     //System.out.println("Server fps: " + server.getProperty("fps").get());
+        //System.out.println("Server fps: " + server.getProperty("fps").get());
         //System.out.println("Compression: " + server.getProperty("compression").get());
 
         //System.out.println("FPS: " + usbCamera.getActualFPS());
@@ -105,13 +111,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-        Log.d("Intake Encoder: " + intakeSubsystem.intakeEncoder.getCurrentPosition());
+
     }
 
     @Override
     public void autonomousInit() {
         OI.runCommand(new PanelCommand());
-        OI.runCommand(new DriveCommand(this,vision));
+        OI.runCommand(new DriveCommand(this, vision));
         //OI.runCommand(new LiftCommand(this));
         OI.runCommand(new IntakeCommand(this));
         //OI.runCommand(new OutBallCommand(this));
@@ -127,8 +133,8 @@ public class Robot extends TimedRobot {
         x = Math.pow(Utils.deadzone(x, 0.1), 2) * Utils.sign(x);
         y = Math.pow(Utils.deadzone(y, 0.1), 2) * Utils.sign(y);
 
-        driveSubsystem.left.set(y+x);
-        driveSubsystem.right.set(y-x);
+        driveSubsystem.left.set(y + x);
+        driveSubsystem.right.set(y - x);
     }
 
     @Override
@@ -141,27 +147,49 @@ public class Robot extends TimedRobot {
         x = Math.pow(Utils.deadzone(x, 0.1), 2) * Utils.sign(x);
         y = Math.pow(Utils.deadzone(y, 0.1), 2) * Utils.sign(y);
 
-        driveSubsystem.left.set(y+x);
-        driveSubsystem.right.set(y-x);
+        driveSubsystem.left.set(y + x);
+        driveSubsystem.right.set(y - x);
+
+        /*try{
+            panelSubsystem.hatchPot.getCurrentPosition();
+        } catch(Exception e){
+            e.printStackTrace();
+        }*/
     }
 
     @Override
     public void testInit() {
-     driveSubsystem.shift(false);
-     driveSubsystem.left.testEachWait(0.5, 0.5);
-     driveSubsystem.right.testEachWait(0.5, 0.5);
+        /*
+        driveSubsystem.shift(false);
+        driveSubsystem.left.testEachWait(0.5, 0.5);
+        driveSubsystem.right.testEachWait(0.5, 0.5);
+        */
+
+        double kP, kI, kD;
+        kP = SmartDashboard.getNumber("kP", 0d);
+        kI = SmartDashboard.getNumber("kI", 0d);
+        kD = SmartDashboard.getNumber("kD", 0d);
+        liftSubsystem.liftPID.reTune(kP, kI, kD);
+
+        liftSubsystem.setPosition(LiftSubsystem.LiftPosition.GROUND);
+
+
+        OI.deleteAllTriggers();
+        OI.runCommand(new LiftCommand(this));
     }
 
     @Override
     public void testPeriodic() {
+        liftSubsystem.liftPID.logVerbose();
+        //Log.d(String.format("Lift Pot: %.05f", liftSubsystem.pot.getCurrentPosition()));
     }
 
     @Override
     public void teleopInit() {
         OI.deleteAllTriggers();
-     OI.runCommand(new PanelCommand());
-     OI.runCommand(new DriveCommand(this));
-        //OI.runCommand(new LiftCommand(this));
+        OI.runCommand(new PanelCommand());
+        OI.runCommand(new DriveCommand(this));
+        OI.runCommand(new LiftCommand(this));
         OI.runCommand(new IntakeCommand(this));
         //OI.runCommand(new OutBallCommand(this));
     }

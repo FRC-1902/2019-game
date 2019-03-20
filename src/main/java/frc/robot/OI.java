@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.explodingbacon.bcnlib.controllers.XboxController;
 import com.explodingbacon.bcnlib.framework.AbstractOI;
 
