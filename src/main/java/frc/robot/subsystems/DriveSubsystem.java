@@ -1,85 +1,94 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.explodingbacon.bcnlib.actuators.FakeMotor;
 import com.explodingbacon.bcnlib.actuators.MotorGroup;
+import com.explodingbacon.bcnlib.framework.PIDController;
+import com.explodingbacon.bcnlib.sensors.AbstractEncoder;
 import com.explodingbacon.bcnlib.sensors.BNOGyro;
+import com.explodingbacon.bcnlib.sensors.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.RobotMap;
+import frc.robot.Map;
+import frc.robot.Robot;
+
+import java.util.List;
 
 public class DriveSubsystem extends Subsystem {
 
-    public MotorGroup left, right;
+    public MotorGroup leftDrive, rightDrive;
+    public PIDController positionPID;
+    public PIDController rotatePID, rotateInPlacePID, rotateDrivingPID;
+    public Encoder rightDriveEncoder;
+    public Encoder leftDriveEncoder;
+    public AbstractEncoder driveEncoderAvg;
+    public BNOGyro gyro;
 
-    public Solenoid shift;
+    private Solenoid shift, light;
 
-    WPI_VictorSPX leftDrive1;
-    WPI_VictorSPX leftDrive2;
-    WPI_VictorSPX leftDrive3;
-    WPI_VictorSPX rightDrive1;
-    WPI_VictorSPX rightDrive2;
-    WPI_VictorSPX rightDrive3;
-    //CanEncoder currentEncoder;
-    BNOGyro gyro;
+    public FakeMotor positionPIDOutput, rotatePIDOutput, rotateDrivingPIDOutput, rotateInPlacePIDOutput;
 
     public DriveSubsystem() {
-        leftDrive1 = new WPI_VictorSPX(RobotMap.DRIVE_LEFT_1);
-        leftDrive2 = new WPI_VictorSPX(RobotMap.DRIVE_LEFT_2);
-        leftDrive3 = new WPI_VictorSPX(RobotMap.DRIVE_LEFT_3);
-        rightDrive1 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_1);
-        rightDrive2 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_2);
-        rightDrive3 = new WPI_VictorSPX(RobotMap.DRIVE_RIGHT_3);
-        left = new MotorGroup(leftDrive1, leftDrive2, leftDrive3);
-        left.setInverted(true);
-        right = new MotorGroup(rightDrive1, rightDrive2, rightDrive3);
-        shift = new Solenoid(RobotMap.SHIFTER_SOLENOID);
+
         gyro = new BNOGyro(true);
-        gyro.rezero();
-    }
 
-    public void tankDrive(double leftPower, double rightPower) {
-        /*
-        left.set(leftPower);
-        right.set(rightPower);
-        */
-    }
+        shift = new Solenoid(Map.SHIFT);
+        light = new Solenoid(1);
 
-    public void arcadeDrive(double x, double y) {
-        tankDrive(y + x, y - x);
-    }
+        positionPIDOutput = new FakeMotor();
+        rotatePIDOutput = new FakeMotor();
+        rotateDrivingPIDOutput = new FakeMotor();
+        rotateInPlacePIDOutput = new FakeMotor();
 
-    public void stop() {
-        left.set(0);
-        right.set(0);
-    }
+        rotatePID = new PIDController(rotatePIDOutput, gyro, .0085,0.001,0);
+        rotatePID.setRotational(true);
 
-    public void setLeft(double set) {
-        left.set(set);
-    }
 
-    public void setRight(double set) {
-        right.set(set);
-    }
+        rotateInPlacePID = new PIDController(rotateInPlacePIDOutput, gyro, .012,0.001,0); //.0105 > .0115
+        rotateInPlacePID.setRotational(true);
 
-    public void shift(boolean b) {
-        shift.set(b);
-    }
+        rotateDrivingPID = new PIDController(rotateDrivingPIDOutput, gyro, .0085,0,0);
+        rotateDrivingPID.setRotational(true);
 
-    public double getHeading() {
-        return gyro.getHeading();
-    }
+        rightDrive = new MotorGroup(new WPI_VictorSPX(Map.RIGHT_DRIVE_A), new WPI_VictorSPX(Map.RIGHT_DRIVE_B),
+                new WPI_VictorSPX(Map.RIGHT_DRIVE_C));
 
-    public void resetGyro() {
-        gyro.rezero();
-    }
+        rightDrive.setInverted(true);
 
-    public BNOGyro getGyro() {
-        return gyro;
-    }
 
-    public int getEncoderReading() {
-        return -1;
-        //return currentEncoder.getCurrentPosition();
+        leftDrive = new MotorGroup(new WPI_VictorSPX(Map.LEFT_DRIVE_A), new WPI_VictorSPX(Map.LEFT_DRIVE_B),
+                new WPI_VictorSPX(Map.LEFT_DRIVE_C));
+
+
+        rightDriveEncoder = new Encoder(Map.DRIVE_RIGHT_ENCODER_A, Map.DRIVE_RIGHT_ENCODER_B);
+        leftDriveEncoder = new Encoder(Map.DRIVE_LEFT_ENCODER_A, Map.DRIVE_LEFT_ENCODER_B);
+
+        rightDriveEncoder.setReversed(true);
+        leftDriveEncoder.setReversed(false);
+
+        driveEncoderAvg = new AbstractEncoder() {
+            @Override
+            public double getRate() {
+                return (leftDriveEncoder.getRate() + rightDriveEncoder.getRate())/2;
+            }
+
+            @Override
+            public int get() {
+                return (leftDriveEncoder.get() + rightDriveEncoder.get())/2;
+            }
+
+            @Override
+            public void reset() {
+                leftDriveEncoder.reset();
+                rightDriveEncoder.reset();
+            }
+        };
+
+        positionPID = new PIDController(positionPIDOutput,driveEncoderAvg, 0.002, 0, 0);
+
+
+        positionPID.setTarget(leftDriveEncoder.get() + inchesToClicks(100));
     }
 
     @Override
@@ -87,8 +96,73 @@ public class DriveSubsystem extends Subsystem {
 
     }
 
-    @Override
-    public void setName(String subsystem, String name) {
+    public double getRate() {
+        return (Math.abs(rightDriveEncoder.getRate() + leftDriveEncoder.getRate()))/2;
+    }
 
+    public double getRateNotAbs() {
+        return (rightDriveEncoder.getRate() + leftDriveEncoder.getRate())/2;
+    }
+
+    public void tankDrive(double left, double right) {
+        leftDrive.set(left);
+        rightDrive.set(right);
+    }
+
+    public void shift(boolean b) {
+        b = !b;
+        shift.set(b);
+    }
+
+    public boolean getShift() {
+        boolean b = shift.get();
+        b = !b;
+        return b;
+    }
+
+    public static double inchesTORotations(){
+        return -1;
+    }
+
+    public double getRightVelocityInchesPerSec(){
+        return -1;
+    }
+
+    /**
+     * Converts inches to strafe encoder clicks.
+     *
+     * @param inches The inches to be converted.
+     * @return The encoder clicks equivalent to the inches provided.
+     */
+    public static double inchesToClicks(double inches) {
+        return inchesToRotations(inches) * 360;
+    }
+
+    public static double inchesPerSecondToRpm(double inches_per_second) {
+        return inchesToRotations(inches_per_second) * 60;
+    }
+
+    public static double inchesToRotations(double inches) {
+        return inches / (Math.PI * 6);
+    }
+
+    public static double clicksToInches(double clicks) {
+        return rotationsToInches(clicks / 360);
+    }
+
+    private static double rpmToInchesPerSecond(double rpm) {
+        return rotationsToInches(rpm) / 60;
+    }
+
+    public static double rotationsToInches(double rotations) {
+        return rotations * (Math.PI * 6);
+    }
+
+    public void setPIDEnabled(boolean state){
+        if(state){
+            rotatePID.enable();
+        } else{
+            rotatePID.disable();
+        }
     }
 }
