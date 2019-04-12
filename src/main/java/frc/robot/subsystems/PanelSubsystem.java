@@ -17,7 +17,7 @@ public class PanelSubsystem extends Subsystem {
     public Potentiometer hatchPot;
     public TalonSRX hatchArm;
     public PIDController hatchPID;
-    public Solenoid outtake;
+    public Solenoid outtake, clamp;
 
     public PanelSubsystem() {
         hatchArm = new TalonSRX(RobotMap.HATCH_ARM);
@@ -25,11 +25,12 @@ public class PanelSubsystem extends Subsystem {
         hatchArm.setSensorPhase(true);
         hatchArm.setInverted(true);
         //hatchEncoder = new CanEncoder(RobotMap.HATCH_ARM);
-        hatchPot = new Potentiometer(RobotMap.HATCH_POTENTIOMETER);
+        hatchPot = null;//new Potentiometer(RobotMap.HATCH_POTENTIOMETER);
         //hatchPID = new PIDController(null, hatchEncoder, 0, 0, 0);
         hatchPID = new PIDController(null, hatchPot, 3, 0, 0); //0.001 3
         //hatchEncoder.reset();
         outtake = new Solenoid(RobotMap.OUTTAKE_SOLENOID);
+        clamp = new Solenoid(RobotMap.CLAMP_SOLENOID);
     }
 
     public void setHatchArm(double pow) {
@@ -39,6 +40,8 @@ public class PanelSubsystem extends Subsystem {
     public void setOuttake(boolean out) {
         outtake.set(out);
     }
+
+    public void setClamp(boolean set) {clamp.set(set);}
 
     @Override
     protected void initDefaultCommand() {

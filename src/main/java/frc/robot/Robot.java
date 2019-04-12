@@ -20,6 +20,9 @@ import com.explodingbacon.bcnlib.framework.Log;
 import com.explodingbacon.bcnlib.utils.Utils;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DriveCommand;
@@ -46,8 +49,12 @@ public class Robot extends TimedRobot {
     public static VisionThread vision;
     UsbCamera camera;
     MjpegServer server;
-    public static boolean OutBall = false;
+    public static boolean OutBall = true;
     public static Robot self;
+
+    NetworkTable table;
+    NetworkTableEntry tx, ta, ts, cameraMode, ledMode, camtran;
+
 
     //Solenoid s;
 
@@ -72,6 +79,8 @@ public class Robot extends TimedRobot {
         System.out.println("Server fps: " + server.getProperty("fps").get());
         server.getProperty("compression").set(50);
         */
+        table = NetworkTableInstance.getDefault().getTable("limelight");
+        camtran = table.getEntry("camtran");
 
         SmartDashboard.putNumber("kP", 0d);
         SmartDashboard.putNumber("kI", 0d);
@@ -102,6 +111,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
+
+
         //System.out.println("Server fps: " + server.getProperty("fps").get());
         //System.out.println("Compression: " + server.getProperty("compression").get());
 
@@ -111,21 +122,22 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-
+        //Log.d("Lift: " + liftSubsystem.pot.getForPID());
+        //System.out.println("Left: " + driveSubsystem.leftDriveEncoder.get() + " Right: " + driveSubsystem.rightDriveEncoder.get());
     }
 
     @Override
     public void autonomousInit() {
-        OI.runCommand(new PanelCommand());
+        //OI.runCommand(new PanelCommand());
         OI.runCommand(new DriveCommand(this, vision));
         //OI.runCommand(new LiftCommand(this));
-        OI.runCommand(new IntakeCommand(this));
+        //OI.runCommand(new IntakeCommand(this));
         //OI.runCommand(new OutBallCommand(this));
     }
 
     @Override
     public void autonomousPeriodic() {
-        double x = OI.driveController.getX2();
+        /*double x = OI.driveController.getX2();
         double y = OI.driveController.getY();
 
         y = -y;
@@ -134,12 +146,23 @@ public class Robot extends TimedRobot {
         y = Math.pow(Utils.deadzone(y, 0.1), 2) * Utils.sign(y);
 
         driveSubsystem.left.set(y + x);
-        driveSubsystem.right.set(y - x);
+        driveSubsystem.right.set(y - x);*/
     }
 
     @Override
     public void teleopPeriodic() {
-        double x = OI.driveController.getX2();
+        try{
+            Double[] data = camtran.getDoubleArray(new Double[]{});
+
+            double x = data[0];
+            double z = data[2];
+            double yaw = data[4];
+            //System.out.println(" X: " + x + " Z: " + z + " Yaw: " + yaw);
+
+        } catch(Exception e){
+            //System.out.println("Aw heck");
+        }
+        /*double x = OI.driveController.getX2();
         double y = OI.driveController.getY();
 
         y = -y;
@@ -159,11 +182,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        /*
-        driveSubsystem.shift(false);
-        driveSubsystem.left.testEachWait(0.5, 0.5);
-        driveSubsystem.right.testEachWait(0.5, 0.5);
-        */
+        //liftSubsystem.lift.testEachWait(0.7, 0.2);
 
         double kP, kI, kD;
         kP = SmartDashboard.getNumber("kP", 0d);
@@ -171,22 +190,29 @@ public class Robot extends TimedRobot {
         kD = SmartDashboard.getNumber("kD", 0d);
         liftSubsystem.liftPID.reTune(kP, kI, kD);
 
-        liftSubsystem.setPosition(LiftSubsystem.LiftPosition.GROUND);
+        //liftSubsystem.setPosition(LiftSubsystem.LiftPosition.GROUND);
 
 
         OI.deleteAllTriggers();
+        /*long time = System.currentTimeMillis();
+        while(System.currentTimeMillis() - time < 1000){
+            liftSubsystem.lift1.
+        }*/
         OI.runCommand(new LiftCommand(this));
+
+        //liftSubsystem.lift.set(0.45);
     }
 
     @Override
     public void testPeriodic() {
-        liftSubsystem.liftPID.logVerbose();
         //Log.d(String.format("Lift Pot: %.05f", liftSubsystem.pot.getCurrentPosition()));
+        if(liftSubsystem.liftPID.isEnabled()) liftSubsystem.liftPID.logVerbose();
+        //if(liftSubsystem.downPID.isEnabled()) liftSubsystem.downPID.logVerbose();
     }
 
     @Override
     public void teleopInit() {
-        OI.deleteAllTriggers();
+        //OI.deleteAllTriggers();
         OI.runCommand(new PanelCommand());
         OI.runCommand(new DriveCommand(this));
         OI.runCommand(new LiftCommand(this));

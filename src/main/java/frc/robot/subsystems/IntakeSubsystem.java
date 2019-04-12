@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RevColorDistance;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class IntakeSubsystem extends Subsystem {
@@ -20,6 +21,7 @@ public class IntakeSubsystem extends Subsystem {
         //intakeArm = new TalonSRX(RobotMap.INTAKE_ARM);
         intakeArm = new Solenoid(RobotMap.INTAKE_SOLENOID);
         intake = new Talon(RobotMap.INTAKE);
+        if(Robot.OutBall) intake.setInverted(true);
         conveyor = new Victor(RobotMap.CONVEYOR);
         //intakeArm.setNeutralMode(NeutralMode.Brake);
         //intakeArm.setSensorPhase(true);

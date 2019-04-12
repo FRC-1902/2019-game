@@ -8,20 +8,79 @@ import frc.robot.Robot;
 import static frc.robot.Robot.panelSubsystem;
 
 public class PanelCommand extends Command {
-    boolean hasReZeroed = false, didOuttake = false;
+    boolean hasReZeroed = false, didOuttake = false, actionToggle = false;
+
+    boolean outtakePrevious = false, clampPrevious = false;
 
     @Override
     public void onInit() {
-        panelSubsystem.hatchPID.setTarget(panelSubsystem.hatchPID.getCurrentSourceValue());
-        panelSubsystem.hatchPID.enable(); //67.375 to 137.5 : 2.041
+        //panelSubsystem.hatchPID.setTarget(panelSubsystem.hatchPID.getCurrentSourceValue());
+        //panelSubsystem.hatchPID.enable(); //67.375 to 137.5 : 2.041
+        panelSubsystem.setClamp(false);
+        panelSubsystem.setOuttake(false);
     }
 
     //250 straight up, 3000 straight out
 
     @Override
     public void onLoop() {
+        /*if(OI.manipController.getDPad().isUp()){
+            if(!actionToggle){
+                actionToggle = true;
+                panelSubsystem.setOuttake(true);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                panelSubsystem.setClamp(true);
+            }
+        } else if(OI.manipController.getDPad().isDown()){
+            if(!actionToggle){
+                actionToggle = true;
+                panelSubsystem.setOuttake(true);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                panelSubsystem.setClamp(false);
+            }
+        } else{
+            panelSubsystem.setOuttake(false);
+            actionToggle = false;
+        }*/
+
+        if (OI.driverHeck.get()) {
+            panelSubsystem.setOuttake(true);
+            panelSubsystem.setClamp(false);
+        }
+
+        boolean outtake = true;
+        boolean clamp = false;
+        if(OI.driveController.a.get()){
+            panelSubsystem.setOuttake(true);
+            panelSubsystem.setClamp(true);
+        } else{
+            outtake = OI.manipController.leftBumper.get();
+            if(outtake && (!outtakePrevious)){
+                panelSubsystem.setOuttake(false);
+            } else if (!outtake) {
+                panelSubsystem.setOuttake(true);
+            }
+
+            clamp = OI.manipController.rightBumper.get();
+            if(clamp && !clampPrevious){
+                panelSubsystem.setClamp(true);
+            } else if (!clamp){
+                panelSubsystem.setClamp(false);
+            }
+        }
+
+        outtakePrevious = outtake;
+        clampPrevious = clamp;
         //panelSubsystem.hatchPID.logVerbose();
-        System.out.println("Potentiometer: " + panelSubsystem.hatchPot.getCurrentPosition());
+        //System.out.println("Potentiometer: " + panelSubsystem.hatchPot.getCurrentPosition());
 
         /*if (OI.manipController.getDPad().isLeft()) {
             panelSubsystem.hatchPID.setTarget((50) + (hasReZeroed ? 130 : 0)); //110
@@ -42,7 +101,7 @@ public class PanelCommand extends Command {
            }
         }*/  //out ball at 1000 clicks
 
-        if(OI.driveController.b.get()){
+        /*if(OI.driveController.b.get()){
             panelSubsystem.hatchPID.setTarget(0.05); //up 0.05
         } else if (OI.manipController.getDPad().isRight()) {
             panelSubsystem.hatchPID.setTarget(0.435); // middle 0.477
@@ -52,9 +111,9 @@ public class PanelCommand extends Command {
             panelSubsystem.hatchPID.setTarget(0.05); //up 0.05
         } else if(OI.manipController.x.get()){
             panelSubsystem.hatchPID.setTarget(0.27);// 0.157
-        }
+        }*/
 
-        if (OI.manipController.getDPad().isUp()) {
+        /*if (OI.manipController.getDPad().isUp()) {
             panelSubsystem.setOuttake(true);
             panelSubsystem.hatchPID.setTarget(0.435); //score // 0.477
             didOuttake = true;
@@ -64,9 +123,9 @@ public class PanelCommand extends Command {
                 didOuttake = false;
                 panelSubsystem.hatchPID.setTarget(0.5); //0.5
             }
-        }
+        }*/
 
-        if (Math.abs(OI.manipController.getY()) < 0.1) {
+        /*if (Math.abs(OI.manipController.getY()) < 0.1) {
             double pow = panelSubsystem.hatchPID.getMotorPower();
             pow = Utils.cap(pow, 0.5);
             panelSubsystem.setHatchArm(pow);
@@ -75,7 +134,7 @@ public class PanelCommand extends Command {
             pow *= 0.5;
             panelSubsystem.setHatchArm(pow);
             panelSubsystem.hatchPID.setTarget(panelSubsystem.hatchPID.getCurrentSourceValue());
-        }
+        }*/
 
         /*if(OI.manipController.leftJoyButton.get()){
             panelSubsystem.hatchEncoder.reset();

@@ -36,10 +36,10 @@ public class IntakeCommand extends Command {
     @Override
     public void onLoop() {
 
-        if(OI.driveController.b.get()){
+        if(OI.driverHeck.get()){
             isDeployed = false;
         } else{
-            if (OI.manipController.rightJoyButton.get()) {
+            if (OI.manipController.getDPad().isLeft()) {
                 if (!deployToggle) {
                     deployToggle = true;
                     isDeployed = !isDeployed;
@@ -70,7 +70,7 @@ public class IntakeCommand extends Command {
         dist = intakeSubsystem.distance.getDistance();
         int dInt = Byte.toUnsignedInt(dist.get(1)) * 256 + Byte.toUnsignedInt(dist.get(0));
 
-        if (OI.manipController.leftBumper.get() && dInt < 1000) {
+        if (OI.manipController.getDPad().isDown() && dInt < 1000) {
             /*if(outTakeTimer == 0){
                 outTakeTimer = System.currentTimeMillis();
             }
@@ -107,7 +107,7 @@ public class IntakeCommand extends Command {
             intakeSubsystem.setIntakePower(0);
             intakeSubsystem.setConveyorPower(0);
             //outBallSubsystem.set(OI.manipController.getRightTrigger());
-            if (OI.manipController.rightBumper.get()) {
+            if (OI.manipController.getDPad().isUp()) {
                 outBallSubsystem.set(0.7);
             } else{
                 outBallSubsystem.set(0);

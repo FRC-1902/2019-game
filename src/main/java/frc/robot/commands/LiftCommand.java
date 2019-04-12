@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import com.explodingbacon.bcnlib.framework.Command;
+import com.explodingbacon.bcnlib.framework.Log;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.subsystems.LiftSubsystem;
@@ -9,6 +10,7 @@ public class LiftCommand extends Command {
     LiftSubsystem liftSubsystem;
     double pow;
     boolean pidEnabeld = false;
+    Long fallStop = System.currentTimeMillis();
 
     public LiftCommand(Robot robot) {
         this.liftSubsystem = robot.liftSubsystem;
@@ -18,6 +20,7 @@ public class LiftCommand extends Command {
     public void onInit() {
         liftSubsystem.setPower(0);
         liftSubsystem.liftPID.enable();
+        liftSubsystem.setPosition(LiftSubsystem.LiftPosition.GROUND);
     }
 
     @Override
@@ -39,6 +42,10 @@ public class LiftCommand extends Command {
         } else if (OI.manipController.getLeftTrigger() > 0.2) {
             liftSubsystem.liftPID.disable();
             liftSubsystem.lift.set(OI.manipController.getLeftTrigger() * 0.8);
+        } else if (Robot.OutBall) {
+            liftSubsystem.liftPID.disable();
+            liftSubsystem.lift.set(liftSubsystem.pot.getForPID() < LiftSubsystem.LiftPosition.CARGO_SHIP.value ?
+                    liftSubsystem.downPID.getMotorPower() : 0);
         } else {
             liftSubsystem.liftPID.disable();
             liftSubsystem.lift.set(0);
