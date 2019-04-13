@@ -9,7 +9,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.*;
-import frc.robot.Lesterbrary.*;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.vision.VisionThread;
@@ -241,50 +240,6 @@ public class DriveCommand extends Command {
                     driveSubsystem.arcadeDrive(driverX, driverY);
                 }
             }
-        }
-    };
-
-    Runnable dubinsPath = new Runnable() {
-
-        @Override
-        public void run() {
-            driveSubsystem.shift(false);
-            Double[] data = camtran.getDoubleArray(new Double[]{});
-
-            double x = data[0], y = data[1], z = data[2], pitch = data[3], yaw = data[4], roll = data[5];
-            //Pose start = new Pose(0,0, Math.toRadians(-yaw));
-            //Pose end = new Pose(-x, -z, 0);
-            Pose start = new Pose(0,0, Math.toRadians(29.3));
-            Pose end = new Pose(30.57, 65.06, 0);
-
-            DubinsPath path = Lester.generateDubinsPath(start, end, 13.25);
-            System.out.println("Try 1");
-
-            System.out.println("Is valid: " + path.isValid() + " X: " + x + " Z: " + z + " Yaw: " + yaw);
-
-            while(!path.isValid() && OI.driveVision.get()){
-                data = camtran.getDoubleArray(new Double[]{});
-
-                x = data[0];
-                z = data[2];
-                yaw = data[4];
-                if(x == 0 && y == 0 && yaw == 0){
-                  //broked
-                } else{
-                    start = new Pose(0,0, Math.toRadians(-yaw));
-                    end = new Pose(-x, -z, 0);
-                    path = Lester.generateDubinsPath(start, end, 13.25);
-                }
-
-                //System.out.println("Is valid: " + path.isValid() + " X: " + x + " Z: " + z + " Yaw: " + yaw);
-            }
-
-            System.out.println("Doing the thing");
-
-            alignHasRun = true;
-            DubinsFollow follow = new DubinsFollow(driveSubsystem,instance);
-            follow.followLine(new LineSegment(new Point(0,0), new Point(0,100)));
-            //follow.followDubinsPath(path);
         }
     };
 }

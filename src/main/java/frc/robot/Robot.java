@@ -81,6 +81,8 @@ public class Robot extends TimedRobot {
         */
         table = NetworkTableInstance.getDefault().getTable("limelight");
         camtran = table.getEntry("camtran");
+        cameraMode = table.getEntry("camMode");
+        ledMode = table.getEntry("ledMode");
 
         SmartDashboard.putNumber("kP", 0d);
         SmartDashboard.putNumber("kI", 0d);
@@ -97,6 +99,9 @@ public class Robot extends TimedRobot {
         vision = new VisionThread();
 
         vision.start();*/
+
+        cameraMode.setNumber(1);
+        ledMode.setNumber(1);
 
         self = this;
     }
@@ -124,6 +129,7 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {
         //Log.d("Lift: " + liftSubsystem.pot.getForPID());
         //System.out.println("Left: " + driveSubsystem.leftDriveEncoder.get() + " Right: " + driveSubsystem.rightDriveEncoder.get());
+
     }
 
     @Override
@@ -182,7 +188,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        //liftSubsystem.lift.testEachWait(0.7, 0.2);
+        liftSubsystem.lift.testEachWait(0.7, 0.2);
 
         double kP, kI, kD;
         kP = SmartDashboard.getNumber("kP", 0d);

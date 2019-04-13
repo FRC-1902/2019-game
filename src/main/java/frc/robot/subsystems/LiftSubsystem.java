@@ -72,7 +72,7 @@ public class LiftSubsystem extends Subsystem {
 
     private static final double GROUND_CONSTANT = Robot.OutBall ? 0.148: 0.160;
     public enum LiftPosition {
-        GROUND(0), CARGO_SHIP(0.322 - 0.160), ROCKET_2(0.498 - 0.160), ROCKET_3(Robot.OutBall ? 0.775 - 0.175 : 0.775 - 0.160); //0.013 per inch
+        GROUND(0), CARGO_SHIP(Robot.OutBall ? (0.322 - 0.160) * 1.6 : (0.322 - 0.160)), ROCKET_2(0.498 - 0.160), ROCKET_3(Robot.OutBall ? 0.775 - 0.175 : 0.775 - 0.160); //0.013 per inch
 
         public double value;
 
