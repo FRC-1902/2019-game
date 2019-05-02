@@ -2,15 +2,16 @@ package frc.robot.commands;
 
 import com.explodingbacon.bcnlib.actuators.FakeMotor;
 import com.explodingbacon.bcnlib.framework.Command;
-import com.explodingbacon.bcnlib.framework.Log;
 import com.explodingbacon.bcnlib.framework.PIDController;
 import com.explodingbacon.bcnlib.utils.Utils;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.robot.*;
+import frc.robot.FakePIDSource;
+import frc.robot.OI;
+import frc.robot.RevColorDistance;
+import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.vision.VisionThread;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +24,7 @@ public class DriveCommand extends Command {
     VisionThread vision;
     ByteBuffer dist;
     ByteArrayInputStream byteStream;
-     public PIDController leftBrakePID, rightBrakePID;
+    public PIDController leftBrakePID, rightBrakePID;
 
     RevColorDistance distance;
     NetworkTable table;
@@ -59,12 +60,12 @@ public class DriveCommand extends Command {
         cameraMode.forceSetNumber(0);
     }
 
-    public double getPixelOffset(){
+    public double getPixelOffset() {
         double offset = tx.getDouble(0);
         return offset;
     }
 
-    public boolean isTargetValid(){
+    public boolean isTargetValid() {
         double area = ta.getDouble(0);
         if (area == 0 || area >= 40)
             return false;
@@ -107,9 +108,9 @@ public class DriveCommand extends Command {
         } else {
             shiftToggle = false;
         }*/
-        if(OI.driveController.rightTrigger.get()){
+        if (OI.driveController.rightTrigger.get()) {
             driveSubsystem.shift(true);
-        } else{
+        } else {
             driveSubsystem.shift(false);
         }
 
@@ -131,9 +132,9 @@ public class DriveCommand extends Command {
             sublimeAlign.run();
         } else if (OI.driveController.rightBumper.get()) {
             driveSubsystem.arcadeDrive(0, -0.5);
-        } else if(OI.driveController.getDPad().isRight()){
+        } else if (OI.driveController.getDPad().isRight()) {
             driveSubsystem.arcadeDrive(-1, 0.5);
-        } else if(OI.driveController.getDPad().isLeft()){
+        } else if (OI.driveController.getDPad().isLeft()) {
             driveSubsystem.arcadeDrive(-1, -0.5);
         } else if (!OI.driveController.a.get()) {
             //System.out.println("TX: " + tx.getDouble(0));
@@ -153,15 +154,15 @@ public class DriveCommand extends Command {
            isBrake = false;
        }*/
 
-       if(!OI.driveVision.get()){
-           isTracking = false;
-           alignHasRun = false;
-       }
+        if (!OI.driveVision.get()) {
+            isTracking = false;
+            alignHasRun = false;
+        }
 
-       if (!isTracking){
-           cameraMode.setNumber(1);
-           ledMode.setNumber(1);
-       }
+        if (!isTracking) {
+            cameraMode.setNumber(1);
+            ledMode.setNumber(1);
+        }
 
        /*if(isTracking && cameraMode.getNumber(0).equals(0)){
            cameraMode.forceSetNumber(1);

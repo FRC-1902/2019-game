@@ -21,7 +21,7 @@ public class IntakeSubsystem extends Subsystem {
         //intakeArm = new TalonSRX(RobotMap.INTAKE_ARM);
         intakeArm = new Solenoid(RobotMap.INTAKE_SOLENOID);
         intake = new Talon(RobotMap.INTAKE);
-        if(Robot.OutBall) intake.setInverted(true);
+        if (Robot.OutBall) intake.setInverted(true);
         conveyor = new Victor(RobotMap.CONVEYOR);
         //intakeArm.setNeutralMode(NeutralMode.Brake);
         //intakeArm.setSensorPhase(true);

@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import com.explodingbacon.bcnlib.framework.Command;
-import com.explodingbacon.bcnlib.framework.Log;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.subsystems.LiftSubsystem;
@@ -32,7 +31,7 @@ public class LiftCommand extends Command {
         if (OI.manipController.y.get()) liftSubsystem.setPosition(LiftSubsystem.LiftPosition.ROCKET_3);
 
         if (OI.manipController.a.get() || OI.manipController.b.get() || OI.manipController.y.get()) {
-            if(!pidEnabeld) liftSubsystem.liftPID.enable();
+            if (!pidEnabeld) liftSubsystem.liftPID.enable();
 
             pow = liftSubsystem.liftPID.getMotorPower();
             liftSubsystem.lift.set(pow > 0 ? pow : 0);

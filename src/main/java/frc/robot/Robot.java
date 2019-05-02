@@ -16,8 +16,6 @@
 */
 package frc.robot;
 
-import com.explodingbacon.bcnlib.framework.Log;
-import com.explodingbacon.bcnlib.utils.Utils;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTable;
@@ -157,7 +155,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        try{
+        try {
             Double[] data = camtran.getDoubleArray(new Double[]{});
 
             double x = data[0];
@@ -165,7 +163,7 @@ public class Robot extends TimedRobot {
             double yaw = data[4];
             //System.out.println(" X: " + x + " Z: " + z + " Yaw: " + yaw);
 
-        } catch(Exception e){
+        } catch (Exception e) {
             //System.out.println("Aw heck");
         }
         /*double x = OI.driveController.getX2();
@@ -212,7 +210,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {
         //Log.d(String.format("Lift Pot: %.05f", liftSubsystem.pot.getCurrentPosition()));
-        if(liftSubsystem.liftPID.isEnabled()) liftSubsystem.liftPID.logVerbose();
+        if (liftSubsystem.liftPID.isEnabled()) liftSubsystem.liftPID.logVerbose();
         //if(liftSubsystem.downPID.isEnabled()) liftSubsystem.downPID.logVerbose();
     }
 

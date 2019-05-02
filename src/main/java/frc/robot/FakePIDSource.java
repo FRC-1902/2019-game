@@ -5,11 +5,11 @@ import com.explodingbacon.bcnlib.framework.PIDSource;
 public class FakePIDSource implements PIDSource {
     public double current;
 
-    public FakePIDSource(){
+    public FakePIDSource() {
         current = 0;
     }
 
-    public void setCurrent(double current){
+    public void setCurrent(double current) {
         this.current = current;
     }
 

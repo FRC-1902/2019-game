@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.explodingbacon.bcnlib.actuators.MotorGroup;
-import com.explodingbacon.bcnlib.sensors.AbstractEncoder;
 import com.explodingbacon.bcnlib.sensors.BNOGyro;
 import com.explodingbacon.bcnlib.sensors.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -39,8 +38,8 @@ public class DriveSubsystem extends Subsystem {
         gyro = new BNOGyro(true);
         gyro.rezero();
 
-        leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A,RobotMap.LEFT_DRIVE_ENCODER_B);
-        rightDriveEncoder = new Encoder(RobotMap.RIGHT_DRIVE_ENCODER_A,RobotMap.RIGHT_DRIVE_ENCODER_B);
+        leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A, RobotMap.LEFT_DRIVE_ENCODER_B);
+        rightDriveEncoder = new Encoder(RobotMap.RIGHT_DRIVE_ENCODER_A, RobotMap.RIGHT_DRIVE_ENCODER_B);
         rightDriveEncoder.setReversed(true);
     }
 
@@ -84,11 +83,11 @@ public class DriveSubsystem extends Subsystem {
         return gyro;
     }
 
-    public int getLeftEncoder(){
+    public int getLeftEncoder() {
         return leftDriveEncoder.get();
     }
 
-    public int getRightEncoder(){
+    public int getRightEncoder() {
         return rightDriveEncoder.get();
     }
 

@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import com.explodingbacon.bcnlib.framework.Command;
-import com.explodingbacon.bcnlib.utils.Utils;
 import frc.robot.OI;
 import frc.robot.Robot;
 
@@ -58,21 +57,21 @@ public class PanelCommand extends Command {
 
         boolean outtake = true;
         boolean clamp = false;
-        if(OI.driveController.a.get()){
+        if (OI.driveController.a.get()) {
             panelSubsystem.setOuttake(true);
             panelSubsystem.setClamp(true);
-        } else{
+        } else {
             outtake = OI.manipController.leftBumper.get();
-            if(outtake && (!outtakePrevious)){
+            if (outtake && (!outtakePrevious)) {
                 panelSubsystem.setOuttake(false);
             } else if (!outtake) {
                 panelSubsystem.setOuttake(true);
             }
 
             clamp = OI.manipController.rightBumper.get();
-            if(clamp && !clampPrevious){
+            if (clamp && !clampPrevious) {
                 panelSubsystem.setClamp(true);
-            } else if (!clamp){
+            } else if (!clamp) {
                 panelSubsystem.setClamp(false);
             }
         }

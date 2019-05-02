@@ -36,9 +36,9 @@ public class IntakeCommand extends Command {
     @Override
     public void onLoop() {
 
-        if(OI.driverHeck.get()){
+        if (OI.driverHeck.get()) {
             isDeployed = false;
-        } else{
+        } else {
             if (OI.manipController.getDPad().isLeft()) {
                 if (!deployToggle) {
                     deployToggle = true;
@@ -109,7 +109,7 @@ public class IntakeCommand extends Command {
             //outBallSubsystem.set(OI.manipController.getRightTrigger());
             if (OI.manipController.getDPad().isUp()) {
                 outBallSubsystem.set(0.7);
-            } else{
+            } else {
                 outBallSubsystem.set(0);
             }
             outTakeTimer = 0;

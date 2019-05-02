@@ -6,10 +6,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.explodingbacon.bcnlib.framework.PIDController;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.CanEncoder;
 import frc.robot.Potentiometer;
-import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class PanelSubsystem extends Subsystem {
@@ -41,7 +39,9 @@ public class PanelSubsystem extends Subsystem {
         outtake.set(out);
     }
 
-    public void setClamp(boolean set) {clamp.set(set);}
+    public void setClamp(boolean set) {
+        clamp.set(set);
+    }
 
     @Override
     protected void initDefaultCommand() {
