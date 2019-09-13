@@ -36,7 +36,7 @@ public class PanelSubsystem extends Subsystem {
     }
 
     public void setOuttake(boolean out) {
-        outtake.set(out);
+        outtake.set(!out);
     }
 
     public void setClamp(boolean set) {

@@ -2,12 +2,12 @@ package frc.robot;
 
 public class RobotMap {
 
-    public static final int LIFT_POTENTIOMETER = Robot.OutBall ? 1 : 0;
+    public static final int LIFT_POTENTIOMETER = Robot.OutBall ? 1 : 1;
     public static final int HATCH_POTENTIOMETER = Robot.OutBall ? -1 : 1;
-    public static final int LEFT_DRIVE_ENCODER_A = Robot.OutBall ? 0 : -1;
-    public static final int LEFT_DRIVE_ENCODER_B = Robot.OutBall ? 1 : -1;
-    public static final int RIGHT_DRIVE_ENCODER_A = Robot.OutBall ? 2 : -1;
-    public static final int RIGHT_DRIVE_ENCODER_B = Robot.OutBall ? 3 : -1;
+    public static final int LEFT_DRIVE_ENCODER_A = Robot.OutBall ? 0 : 0;
+    public static final int LEFT_DRIVE_ENCODER_B = Robot.OutBall ? 1 : 1;
+    public static final int RIGHT_DRIVE_ENCODER_A = Robot.OutBall ? 2 : 2;
+    public static final int RIGHT_DRIVE_ENCODER_B = Robot.OutBall ? 3 : 3;
 
     // CAN IDs
 
@@ -21,6 +21,7 @@ public class RobotMap {
     public static final int HATCH_ARM = Robot.OutBall ? 7 : 8;
 
     public static final int INTAKE_ARM = Robot.OutBall ? 8 : 7;
+    public static final int PanelWheel = Robot.OutBall ? 3 : 3;
 
     //PWM IDs
 

@@ -23,10 +23,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.DriveCommand;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.LiftCommand;
-import frc.robot.commands.PanelCommand;
+import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import frc.robot.vision.VisionThread;
 
@@ -45,9 +42,10 @@ public class Robot extends TimedRobot {
     public static IntakeSubsystem intakeSubsystem;
     public static OutBallSubsystem outBallSubsystem;
     public static VisionThread vision;
+    public static PanelSubsystem2 PanelWheelySubsystem;
     UsbCamera camera;
     MjpegServer server;
-    public static boolean OutBall = true;
+    public static boolean OutBall = false;
     public static Robot self;
 
     NetworkTable table;
@@ -91,6 +89,7 @@ public class Robot extends TimedRobot {
         intakeSubsystem = new IntakeSubsystem();
         liftSubsystem = new LiftSubsystem();
         outBallSubsystem = new OutBallSubsystem();
+        PanelWheelySubsystem = new PanelSubsystem2();
 
 
         /*Vision.init();
@@ -166,6 +165,7 @@ public class Robot extends TimedRobot {
         } catch (Exception e) {
             //System.out.println("Aw heck");
         }
+        System.out.println(liftSubsystem.pot.getCurrentPosition());
         /*double x = OI.driveController.getX2();
         double y = OI.driveController.getY();
 
@@ -221,6 +221,7 @@ public class Robot extends TimedRobot {
         OI.runCommand(new DriveCommand(this));
         OI.runCommand(new LiftCommand(this));
         OI.runCommand(new IntakeCommand(this));
+        OI.runCommand(new PanelWheelyCommand(this));
         //OI.runCommand(new OutBallCommand(this));
     }
 }

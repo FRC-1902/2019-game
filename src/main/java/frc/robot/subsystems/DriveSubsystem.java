@@ -51,7 +51,7 @@ public class DriveSubsystem extends Subsystem {
     }
 
     public void arcadeDrive(double x, double y) {
-        tankDrive(y + x, y - x);
+        tankDrive(y, -x);
     }
 
     public void stop() {

@@ -26,7 +26,7 @@ public class LiftSubsystem extends Subsystem {
             lift.setInverted(true);
         } else {
             lift = new MotorGroup(lift1, lift2);
-            lift.setInverted(true);
+            lift.setInverts(false, true);
         }
         pot = new Potentiometer(RobotMap.LIFT_POTENTIOMETER);
 
@@ -69,7 +69,7 @@ public class LiftSubsystem extends Subsystem {
     private static final double GROUND_CONSTANT = Robot.OutBall ? 0.148 : 0.160;
 
     public enum LiftPosition {
-        GROUND(0), CARGO_SHIP(Robot.OutBall ? (0.322 - 0.160) * 1.6 : (0.322 - 0.160)), ROCKET_2(0.498 - 0.160), ROCKET_3(Robot.OutBall ? 0.775 - 0.175 : 0.775 - 0.160); //0.013 per inch
+        GROUND(0), CARGO_SHIP(Robot.OutBall ? (0.322 - 0.160) * 1.6 : (0.322 - 0.160)), ROCKET_2(0.498 - 0.140), ROCKET_3(Robot.OutBall ? 0.775 - 0.140 : 0.775 - 0.160); //0.013 per inch
 
         public double value;
 

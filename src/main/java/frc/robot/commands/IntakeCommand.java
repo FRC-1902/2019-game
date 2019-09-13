@@ -86,8 +86,8 @@ public class IntakeCommand extends Command {
                 outBallSubsystem.set(0.4);
                 intakeSubsystem.setConveyorPower(-1);
             }*/
-            outBallSubsystem.set(0.6);
-            intakeSubsystem.setIntakePower(1);
+            outBallSubsystem.set(0.4);
+            intakeSubsystem.setIntakePower(-1);
             intakeSubsystem.setConveyorPower(-1);
             //isDelay = true;
         } else {

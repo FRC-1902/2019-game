@@ -31,6 +31,11 @@ public class DriveCommand extends Command {
     NetworkTableEntry tx, ta, ts, cameraMode, ledMode, camtran;
 
     DriveCommand instance;
+    boolean justLimelighted = false;
+    double limelightHoldTarget = 0;
+
+    PIDController turn = new PIDController(null, Robot.driveSubsystem.getGyro(), 0.02, 0, 0);
+
 
     public DriveCommand(Robot robot) {
         this.robot = robot;
@@ -92,13 +97,18 @@ public class DriveCommand extends Command {
 
         //System.out.println("Upper: " + Byte.toUnsignedInt(dist.get(1)) + " Lower: " + Byte.toUnsignedInt(dist.get(0)) + " Distance: " + dInt);
 
-        double x = OI.driveController.getX2();
+        double x = OI.driveController.getY2();
         double y = OI.driveController.getY();
 
         y = -y;
 
         x = Math.pow(Utils.deadzone(x, 0.1), 2) * Utils.sign(x);
         y = Math.pow(Utils.deadzone(y, 0.1), 2) * Utils.sign(y);
+
+        if (x != 0 || y != 0) {
+            justLimelighted = false;
+            turn.disable();
+        }
 
         /*if (OI.driveController.rightTrigger.get()) {
             if (!shiftToggle) {
@@ -109,11 +119,16 @@ public class DriveCommand extends Command {
             shiftToggle = false;
         }*/
         if (OI.driveController.rightTrigger.get()) {
-            driveSubsystem.shift(true);
-        } else {
             driveSubsystem.shift(false);
+        } else {
+            driveSubsystem.shift(true);
         }
 
+        if (OI.driveController.leftTrigger.get())
+        {
+            x = x / 3.0;
+            y = y / 3.0;
+        }
         //driveSubsystem.shift(isShifted);
         //System.out.println(driveSubsystem.getHeading());
 
@@ -122,25 +137,38 @@ public class DriveCommand extends Command {
         }
 
         if (OI.driveVision.get()) {
-            driveSubsystem.arcadeDrive(0, 0);
-            isTracking = true;
-            cameraMode.setNumber(0); //TODO: Set to 0 for sublime align, 3 for solvePNP
-            ledMode.setNumber(0);
+            justLimelighted = false;
+        }
+        if (justLimelighted) {
+
+            if (!turn.isEnabled()) {
+                turn.enable();
+                turn.setTarget(limelightHoldTarget);
+            }
+            turn.logVerbose();
+            driveSubsystem.arcadeDrive(-turn.getMotorPower(), 0);
+        } else {
+            if (OI.driveVision.get()) {
+                driveSubsystem.arcadeDrive(0, 0);
+                isTracking = true;
+                cameraMode.setNumber(0); //TODO: Set to 0 for sublime align, 3 for solvePNP
+                ledMode.setNumber(0);
             /*if(!alignHasRun){
                 dubinsPath.run();
             }*/
-            sublimeAlign.run();
-        } else if (OI.driveController.rightBumper.get()) {
-            driveSubsystem.arcadeDrive(0, -0.5);
-        } else if (OI.driveController.getDPad().isRight()) {
-            driveSubsystem.arcadeDrive(-1, 0.5);
-        } else if (OI.driveController.getDPad().isLeft()) {
-            driveSubsystem.arcadeDrive(-1, -0.5);
-        } else if (!OI.driveController.a.get()) {
-            //System.out.println("TX: " + tx.getDouble(0));
+                sublimeAlign.run();
+            } else if (OI.driveController.rightBumper.get()) {
+                driveSubsystem.arcadeDrive(0, -0.5);
+            } else if (OI.driveController.getDPad().isRight()) {
+                driveSubsystem.arcadeDrive(-1, 0.5);
+            } else if (OI.driveController.getDPad().isLeft()) {
+                driveSubsystem.arcadeDrive(-1, -0.5);
+            } else if (!OI.driveController.a.get()) {
+                //System.out.println("TX: " + tx.getDouble(0));
 
-            driveSubsystem.arcadeDrive(x, y);
-            //System.out.println("Heading: " + driveSubsystem.getHeading());
+                driveSubsystem.arcadeDrive(x, y);
+                //System.out.println("Heading: " + driveSubsystem.getHeading());
+            }
         }
 
        /*if(OI.driveController.a.get()){
@@ -182,46 +210,10 @@ public class DriveCommand extends Command {
         return !Robot.self.isEnabled();
     }
 
-    Runnable autoLock = new Runnable() {
-        @Override
-        public void run() {
-            if (vision.getTargetIsValid()) {
-                driveSubsystem.shift(true);
-                PIDController turn = new PIDController(null, driveSubsystem.getGyro(), 0.02, 0.005, 0);
-                turn.setRotational(true);
-                turn.setFinishedTolerance(0.5);
-                turn.enable();
-                double angleOffset = (vision.getTargetCenter() - 427) * (59.7 / 854);
-                turn.setTarget(driveSubsystem.getHeading() + angleOffset);
-                long lastTime = System.currentTimeMillis();
-                while (!turn.isDone() && OI.driveVision.get()) { //Math.abs(vision.getTargetCenter() - 320) > 45
-                    driveSubsystem.arcadeDrive(turn.getMotorPower(), 0);
-                    System.out.println("(Locked) Error: " + turn.getCurrentError() + " Latency : " + (System.currentTimeMillis() - lastTime));
-                    lastTime = System.currentTimeMillis();
-                    try {
-                        Thread.sleep(15);
-                    } catch (Exception e) {
-                    }
-                    //System.out.println("Error: " + turn.getCurrentError() + "Power: " + turn.getMotorPower());
-                }
-                while (OI.driveVision.get()) {
-                    driveSubsystem.arcadeDrive(turn.getMotorPower(), -OI.driveController.getY());
-                    System.out.println("Error: " + turn.getCurrentError() + " Latency : " + (System.currentTimeMillis() - lastTime));
-                    lastTime = System.currentTimeMillis();
-                    try {
-                        Thread.sleep(15);
-                    } catch (Exception e) {
-                    }
-
-                }
-            }
-        }
-    };
-
     Runnable sublimeAlign = new Runnable() {
         @Override
         public void run() {
-            driveSubsystem.shift(false);
+            driveSubsystem.shift(true);
             FakePIDSource fakePIDSource = new FakePIDSource();
             PIDController turn = new PIDController(null, fakePIDSource, 0.02, 0, 0);
             turn.setRotational(true);
@@ -234,6 +226,11 @@ public class DriveCommand extends Command {
 
                 double driverX = Math.pow(Utils.deadzone(OI.driveController.getX2(), 0.1), 2) * Utils.sign(OI.driveController.getX2());
                 double driverY = Math.pow(Utils.deadzone(OI.driveController.getY(), 0.1), 2) * Utils.sign(-OI.driveController.getY());
+                if (OI.driveController.leftTrigger.get())
+                {
+                    driverX = driverX / 3.0;
+                    driverY = driverY / 3.0;
+                }
                 if (isTargetValid()) {
                     fakePIDSource.setCurrent(getPixelOffset());
                     driveSubsystem.arcadeDrive(-turn.getMotorPower(), driverY);
@@ -241,6 +238,8 @@ public class DriveCommand extends Command {
                     driveSubsystem.arcadeDrive(driverX, driverY);
                 }
             }
+            justLimelighted = true;
+            limelightHoldTarget = Robot.driveSubsystem.getGyro().getForPID();
         }
     };
 }
