@@ -38,4 +38,6 @@ public class RobotMap {
     public static final int OUTTAKE_SOLENOID = Robot.OutBall ? 3 : 1;
     public static final int INTAKE_SOLENOID = Robot.OutBall ? 2 : 2;
     public static final int CLAMP_SOLENOID = Robot.OutBall ? 1 : 3;
+
+    public static final boolean DRIVE_MODE = false; // Arcade Drive is true
 }
