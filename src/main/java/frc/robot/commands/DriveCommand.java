@@ -11,7 +11,6 @@ import frc.robot.FakePIDSource;
 import frc.robot.OI;
 import frc.robot.RevColorDistance;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.vision.VisionThread;
 
@@ -22,13 +21,13 @@ public class DriveCommand extends Command {
     Robot robot;
     DriveSubsystem driveSubsystem;
     boolean hasVision, shiftToggle = false, isShifted = false, isBrake = false, isTracking = false, alignHasRun = false; // TODO:
-                                                                                                                         // on
-                                                                                                                         // ham
-                                                                                                                         // solo
-                                                                                                                         // shifting
-                                                                                                                         // may
-                                                                                                                         // be
-                                                                                                                         // backwards
+    // on
+    // ham
+    // solo
+    // shifting
+    // may
+    // be
+    // backwards
     VisionThread vision;
     ByteBuffer dist;
     ByteArrayInputStream byteStream;
@@ -107,11 +106,11 @@ public class DriveCommand extends Command {
         // Byte.toUnsignedInt(dist.get(0)) + " Distance: " + dInt);
         double y;
         double x;
-        if (RobotMap.DRIVE_MODE){
+        if (OI.ARCADE_DRIVE) {
             x = OI.driveController.getX2();
             y = OI.driveController.getY();
-        y = -y;
-        }else{
+            y = -y;
+        } else {
             x = OI.driveController.getY2();
             y = OI.driveController.getY();
         }
@@ -173,9 +172,9 @@ public class DriveCommand extends Command {
                 driveSubsystem.arcadeDrive(-1, -0.5);
             } else if (!OI.driveController.a.get()) {
                 // System.out.println("TX: " + tx.getDouble(0));
-                if (RobotMap.DRIVE_MODE){
+                if (OI.ARCADE_DRIVE) {
                     driveSubsystem.arcadeDrive(x, y);
-                }else{
+                } else {
                     driveSubsystem.tankDrive(-y, -x);
                 }
                 // System.out.println("Heading: " + driveSubsystem.getHeading());
@@ -235,23 +234,36 @@ public class DriveCommand extends Command {
                         * Utils.sign(OI.driveController.getX2());
                 double driverY = Math.pow(Utils.deadzone(OI.driveController.getY(), 0.1), 2)
                         * Utils.sign(-OI.driveController.getY());
+
+                double driverY2 = Math.pow(Utils.deadzone(OI.driveController.getY2(), 0.1), 2)
+                        * Utils.sign(-OI.driveController.getY2());
+
+                double driverTrigger = Utils.deadzone(OI.driveController.getRightTrigger(), 0.1) * 0.5;
+
                 if (OI.driveController.leftTrigger.get()) {
                     driverX = driverX / 3.0;
                     driverY = driverY / 3.0;
                 }
                 if (isTargetValid()) {
                     fakePIDSource.setCurrent(getPixelOffset());
-                    driveSubsystem.arcadeDrive(-turn.getMotorPower(), driverY);
+                    if (OI.ARCADE_DRIVE) {
+                        driveSubsystem.arcadeDrive(-turn.getMotorPower(), driverY);
+                    } else {
+                        driveSubsystem.arcadeDrive(-turn.getMotorPower(), driverTrigger);
+                    }
                 } else {
-                    if (RobotMap.DRIVE_MODE){
+                    if (OI.ARCADE_DRIVE) {
                         driveSubsystem.arcadeDrive(driverX, driverY);
-                    }else{
-                        driveSubsystem.tankDrive(driverX, driverY);
-                        }
+                    } else {
+                        driveSubsystem.tankDrive(driverY, driverY2);
+                    }
+                }
+                justLimelighted = false;
+                limelightHoldTarget = Robot.driveSubsystem.getGyro().getForPID();
             }
-            justLimelighted = true;
-            limelightHoldTarget = Robot.driveSubsystem.getGyro().getForPID();
         }
+
+        ;
     };
-};}
+}
 
