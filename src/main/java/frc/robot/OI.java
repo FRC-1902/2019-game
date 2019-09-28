@@ -13,5 +13,5 @@ public class OI extends AbstractOI {
     public static Button driverHeck = driveController.y;
 
 
-    public static final boolean ARCADE_DRIVE = false; // Arcade Drive is true
+    public static final boolean ARCADE_DRIVE = true; // Arcade Drive is true
 }

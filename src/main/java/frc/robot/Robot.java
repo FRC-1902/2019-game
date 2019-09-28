@@ -131,11 +131,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        //OI.runCommand(new PanelCommand());
-        OI.runCommand(new DriveCommand(this, vision));
-        //OI.runCommand(new LiftCommand(this));
-        //OI.runCommand(new IntakeCommand(this));
-        //OI.runCommand(new OutBallCommand(this));
+        OI.runCommand(new PanelCommand());
+        OI.runCommand(new DriveCommand(this));
+        OI.runCommand(new LiftCommand(this));
+        OI.runCommand(new IntakeCommand(this));
+        OI.runCommand(new PanelWheelyCommand(this));
     }
 
     @Override
