@@ -120,7 +120,7 @@ public class IntakeCommand extends Command {
                 outBallSubsystem.set(OI.manipController.getY2());
             } else {
                 outBallSubsystem.set(OI.manipController.getY2());
-                intakeSubsystem.setIntakePower(OI.manipController.getY2());
+                intakeSubsystem.setIntakePower(-OI.manipController.getY2());
                 intakeSubsystem.setConveyorPower(-OI.manipController.getY2());
             }
         }
