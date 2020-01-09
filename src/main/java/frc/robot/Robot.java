@@ -16,6 +16,7 @@
 */
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTable;
@@ -186,32 +187,12 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        liftSubsystem.lift.testEachWait(0.7, 0.2);
-
-        double kP, kI, kD;
-        kP = SmartDashboard.getNumber("kP", 0d);
-        kI = SmartDashboard.getNumber("kI", 0d);
-        kD = SmartDashboard.getNumber("kD", 0d);
-        liftSubsystem.liftPID.reTune(kP, kI, kD);
-
-        //liftSubsystem.setPosition(LiftSubsystem.LiftPosition.GROUND);
-
-
-        OI.deleteAllTriggers();
-        /*long time = System.currentTimeMillis();
-        while(System.currentTimeMillis() - time < 1000){
-            liftSubsystem.lift1.
-        }*/
-        OI.runCommand(new LiftCommand(this));
-
-        //liftSubsystem.lift.set(0.45);
+        driveSubsystem.right.testEachWait(0.5, 1);
     }
 
     @Override
     public void testPeriodic() {
-        //Log.d(String.format("Lift Pot: %.05f", liftSubsystem.pot.getCurrentPosition()));
-        if (liftSubsystem.liftPID.isEnabled()) liftSubsystem.liftPID.logVerbose();
-        //if(liftSubsystem.downPID.isEnabled()) liftSubsystem.downPID.logVerbose();
+
     }
 
     @Override

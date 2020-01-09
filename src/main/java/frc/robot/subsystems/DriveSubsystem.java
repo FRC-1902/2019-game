@@ -34,6 +34,7 @@ public class DriveSubsystem extends Subsystem {
         left = new MotorGroup(leftDrive1, leftDrive2, leftDrive3);
         left.setInverted(true);
         right = new MotorGroup(rightDrive1, rightDrive2, rightDrive3);
+        right.setInverts(false, true, false);
         shift = new Solenoid(RobotMap.SHIFTER_SOLENOID);
         gyro = new BNOGyro(true);
         gyro.rezero();
